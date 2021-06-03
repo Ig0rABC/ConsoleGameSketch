@@ -2,6 +2,7 @@
 using Controllers;
 using Models.Entities;
 using Models.Battle;
+using Models.Weapons;
 
 namespace ConsoleGameSketch
 {
@@ -11,11 +12,11 @@ namespace ConsoleGameSketch
         {
             var client = new Client();
 
-            var player = new Player("Igor", 50);
+            var player = new Player("Igor", 24, new Sword());
 
-            var allias = new Entity[] { new Monk(), player };
+            var allias = new Entity[] { new Monk(new Naginata()), player };
 
-            var enemies = new Entity[] { new Goblin(), new Ogre(), new Ogre(), new Goblin() };
+            var enemies = new Entity[] { new Goblin(new Knife()), new Ogre(new WoodenClub()), new Goblin(new WoodenClub()), new Goblin(new ShortBow()) };
             foreach (var e in enemies)
             {
                 e.Damaged += client.OnDamaged;

@@ -40,7 +40,7 @@ namespace Controllers
         public void Attack(Entity victim)
         {
             Attacked?.Invoke(Battle.Attacker, victim);
-            victim.ApplyDamage(Battle.Attacker.Strength);
+            victim.ApplyDamage(Battle.Attacker.Damage);
         }
 
         public void SwitchToAuto()
