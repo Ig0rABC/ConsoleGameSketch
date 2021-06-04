@@ -1,7 +1,7 @@
 ﻿
 namespace Models.Weapons
 {
-    public sealed class Knife : Weapon
+    public sealed class Knife : MeleeWeapon
     {
         public Knife() : base("Knife", 19)
         {

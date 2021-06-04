@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Models.Entities;
+using Models.Weapons;
 using Controllers;
-using Models.Battle;
 
 namespace Menus
 {
@@ -27,8 +26,15 @@ namespace Menus
 
         private void OnAttacked(Entity attacker, Entity victim)
         {
-            Console.WriteLine($"{attacker.Name} is attacking {victim.Name}");
+            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Weapon)} the {victim.Name} with a {attacker.Weapon.Name}");
         }
+
+        private string GetAttackVerb(Weapon weapon) => weapon switch
+        {
+            MeleeWeapon => "striked",
+            RangedWeapon => "shot",
+            _ => "attacked",
+        };
 
         private void OnPlayerGotMove(Entity[] enemies)
         {
