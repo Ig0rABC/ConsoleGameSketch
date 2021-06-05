@@ -7,11 +7,11 @@ namespace Models.Entities
     {
         public string Name { get; }
         public byte Health { get; private set; }
-        public byte Strength { get; }
-        public Weapon Weapon { get; }
-
         public bool IsAlive => Health > 0;
+        public byte Strength { get; }
         public byte Damage => (byte)(Strength + Weapon.Damage);
+        public Weapon Weapon { get; }
+        public byte Ammo { get; set; }
 
         public delegate void DamageTakenHandler(Entity self, byte damage);
         public event DamageTakenHandler Damaged;
@@ -25,6 +25,7 @@ namespace Models.Entities
             Strength = strength;
             Weapon = weapon;
             Health = 100;
+            Ammo = 3;
         }
 
         public void ApplyDamage(byte damage)

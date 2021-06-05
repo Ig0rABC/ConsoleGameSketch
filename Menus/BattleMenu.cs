@@ -15,18 +15,23 @@ namespace Menus
             _controller = controller;
             _controller.PlayerGotMove += OnPlayerGotMove;
             _controller.Attacked += OnAttacked;
-
-            _controller.Battle.Won += OnWon;
+            _controller.Missed += OnMissed;
+            _controller.Changed += OnChanged;
         }
 
-        private void OnWon()
+        private void OnChanged(Controller next)
         {
             Console.WriteLine("You won!");
         }
 
         private void OnAttacked(Entity attacker, Entity victim)
         {
-            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Weapon)} the {victim.Name} with a {attacker.Weapon.Name}");
+            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Weapon)} the {victim.Name} with a {attacker.Weapon.Name}.");
+        }
+
+        private void OnMissed(Entity loser)
+        {
+            Console.WriteLine($"{loser.Name} is missed move.");
         }
 
         private string GetAttackVerb(Weapon weapon) => weapon switch

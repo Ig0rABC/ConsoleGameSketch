@@ -1,11 +1,11 @@
 ﻿using Models.Battle;
 using Models.Entities;
+using Models.Weapons;
 
 namespace Controllers
 {
     public sealed class BattleController : Controller
     {
-        public Battle Battle { get; }
 
         public delegate void PlayerGotMoveHandler(Entity[] enemies);
         public event PlayerGotMoveHandler PlayerGotMove;
@@ -13,34 +13,44 @@ namespace Controllers
         public delegate void AttackedHandler(Entity attacker, Entity victim);
         public event AttackedHandler Attacked;
 
+        public delegate void MissedHandler(Entity loser);
+        public event MissedHandler Missed;
+
+        private readonly Battle _battle;
         private bool _isAuto;
 
         public BattleController(Battle battle) : base()
         {
-            Battle = battle;
+            _battle = battle;
             _isAuto = false;
-            Battle.Won += OnChange;
+            _battle.Won += OnChange;
         }
 
         public BattleController(Battle battle, Controller next) : base(next)
         {
-            Battle = battle;
+            _battle = battle;
             _isAuto = false;
-            Battle.Won += OnChange;
+            _battle.Won += OnChange;
         }
 
         public override void Update()
         {
-            if (Battle.Next() is Player && !_isAuto)
-                PlayerGotMove?.Invoke(Battle.Enemies);
+            _battle.Next();
+            if (_battle.Attacker.Weapon is RangedWeapon && _battle.Attacker.Ammo == 0)
+                Missed?.Invoke(_battle.Attacker);
+            else if (_battle.Attacker is Player && !_isAuto)
+                PlayerGotMove?.Invoke(_battle.Enemies);
             else
                AutoAttack();
         }
 
         public void Attack(Entity victim)
         {
-            Attacked?.Invoke(Battle.Attacker, victim);
-            victim.ApplyDamage(Battle.Attacker.Damage);
+            Attacked?.Invoke(_battle.Attacker, victim);
+            if (_battle.Attacker.Weapon is RangedWeapon)
+                _battle.Attacker.Ammo--;
+            victim.ApplyDamage(_battle.Attacker.Damage);
+            _battle.Attacker.Weapon.Use();
         }
 
         public void SwitchToAuto()
@@ -51,7 +61,7 @@ namespace Controllers
 
         public void AutoAttack()
         {
-            Attack(Battle.WeakestEnemy);
+            Attack(_battle.WeakestEnemy);
         }
     }
 }

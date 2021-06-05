@@ -7,5 +7,7 @@ namespace Models.Weapons
         {
 
         }
+
+        public override void Use() { }
     }
 }
