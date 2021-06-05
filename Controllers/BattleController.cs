@@ -36,7 +36,8 @@ namespace Controllers
         public override void Update()
         {
             _battle.Next();
-            if (_battle.Attacker.Weapon is RangedWeapon && _battle.Attacker.Ammo == 0)
+            if ((_battle.Attacker.Weapon is RangedWeapon && _battle.Attacker.Ammo == 0)
+                || (_battle.Attacker.Weapon is MagicWeapon && _battle.Attacker.Mana < (_battle.Attacker.Weapon as MagicWeapon).RequiredMana))
                 Missed?.Invoke(_battle.Attacker);
             else if (_battle.Attacker is Player && !_isAuto)
                 PlayerGotMove?.Invoke(_battle.Enemies);
@@ -49,6 +50,8 @@ namespace Controllers
             Attacked?.Invoke(_battle.Attacker, victim);
             if (_battle.Attacker.Weapon is RangedWeapon)
                 _battle.Attacker.Ammo--;
+            if (_battle.Attacker.Weapon is MagicWeapon)
+                _battle.Attacker.Mana -= (_battle.Attacker.Weapon as MagicWeapon).RequiredMana;
             victim.ApplyDamage(_battle.Attacker.Damage);
             _battle.Attacker.Weapon.Use();
         }

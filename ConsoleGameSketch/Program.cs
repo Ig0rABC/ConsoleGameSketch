@@ -1,5 +1,4 @@
-﻿using System;
-using Controllers;
+﻿using Controllers;
 using Models.Entities;
 using Models.Battle;
 using Models.Weapons;
@@ -12,7 +11,7 @@ namespace ConsoleGameSketch
         {
             var client = new Client();
 
-            var player = new Player("Igor", 24, new Sword());
+            var player = new Player("Igor", 24, new FlameStaff());
 
             var allias = new Entity[] { new Monk(new Naginata()), player };
 

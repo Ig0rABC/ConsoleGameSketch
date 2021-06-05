@@ -12,6 +12,7 @@ namespace Models.Entities
         public byte Damage => (byte)(Strength + Weapon.Damage);
         public Weapon Weapon { get; }
         public byte Ammo { get; set; }
+        public byte Mana { get; set; }
 
         public delegate void DamageTakenHandler(Entity self, byte damage);
         public event DamageTakenHandler Damaged;
@@ -26,6 +27,7 @@ namespace Models.Entities
             Weapon = weapon;
             Health = 100;
             Ammo = 3;
+            Mana = 100;
         }
 
         public void ApplyDamage(byte damage)

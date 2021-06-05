@@ -14,9 +14,8 @@ namespace Models.Weapons
 
         public override void Use()
         {
-            Condition -= 0.125f;
-            if (Condition < 0)
-                Condition = 0;
+            if (Condition > 0)
+                Condition -= 0.125f;
         }
     }
 }
