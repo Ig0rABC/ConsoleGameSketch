@@ -64,7 +64,7 @@ namespace Controllers
 
         public void AutoAttack()
         {
-            Attack(_battle.WeakestEnemy);
+            Attack(_battle.SuitableVictim);
         }
     }
 }

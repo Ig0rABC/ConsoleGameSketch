@@ -42,13 +42,13 @@ namespace Models.Battle
             return _members.Contains(entity);
         }
 
-        public Entity Weakest
+        public Entity ChooseVictim(Entity attacker)
         {
-            get
-            {
-                byte minHealth = AliveMembers.Min(m => m.Health);
-                return AliveMembers.First(m => m.Health == minHealth);
-            }
+            Entity victim = AliveMembers.First();
+            foreach (var member in AliveMembers.Skip(1))
+                if (member.Health <= attacker.Damage && member.Health > victim.Health && member.Damage > victim.Damage)
+                    victim = member;
+            return victim;
         }
 
         private void OnDied(Entity dead)

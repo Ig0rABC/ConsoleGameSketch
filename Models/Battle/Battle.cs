@@ -11,10 +11,10 @@ namespace Models.Battle
         public event EndedHandler Won;
 
         public Entity[] Enemies => Opposition.AliveMembers;
-        public Entity WeakestEnemy => Opposition.Weakest;
+        public Entity SuitableVictim => Opposition.ChooseVictim(Attacker);
 
-        private Party _allies;
-        private Party _enemies;
+        private readonly Party _allies;
+        private readonly Party _enemies;
 
         public Battle(Entity[] allies, Entity[] enemies)
         {
