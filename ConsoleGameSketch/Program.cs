@@ -11,7 +11,7 @@ namespace ConsoleGameSketch
         {
             var client = new Client();
 
-            var player = new Player("Igor", 24, new FlameStaff());
+            var player = new Player("Igor", new Models.AbilityBoard(24, 14, 10), new FlameStaff());
 
             var allias = new Entity[] { new Monk(new Naginata()), player };
 

@@ -4,7 +4,7 @@ namespace Models.Entities
 {
     public sealed class Ogre : Entity
     {
-        public Ogre(Weapon weapon) : base("Ogre", 11, weapon)
+        public Ogre(Weapon weapon) : base("Ogre", new AbilityBoard(11, 2, 4), weapon)
         {
 
         }

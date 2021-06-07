@@ -1,6 +1,5 @@
 ﻿using Models.Battle;
 using Models.Entities;
-using Models.Weapons;
 
 namespace Controllers
 {
@@ -36,24 +35,19 @@ namespace Controllers
         public override void Update()
         {
             _battle.Next();
-            if ((_battle.Attacker.Weapon is RangedWeapon && _battle.Attacker.Ammo == 0)
-                || (_battle.Attacker.Weapon is MagicWeapon && _battle.Attacker.Mana < (_battle.Attacker.Weapon as MagicWeapon).RequiredMana))
+            if (_battle.Attacker.CanAttack == false)
                 Missed?.Invoke(_battle.Attacker);
             else if (_battle.Attacker is Player && !_isAuto)
                 PlayerGotMove?.Invoke(_battle.Enemies);
             else
-               AutoAttack();
+                AutoAttack();
         }
 
         public void Attack(Entity victim)
         {
             Attacked?.Invoke(_battle.Attacker, victim);
-            if (_battle.Attacker.Weapon is RangedWeapon)
-                _battle.Attacker.Ammo--;
-            if (_battle.Attacker.Weapon is MagicWeapon)
-                _battle.Attacker.Mana -= (_battle.Attacker.Weapon as MagicWeapon).RequiredMana;
             victim.ApplyDamage(_battle.Attacker.Damage);
-            _battle.Attacker.Weapon.Use();
+            _battle.Attacker.UseWeapon();
         }
 
         public void SwitchToAuto()

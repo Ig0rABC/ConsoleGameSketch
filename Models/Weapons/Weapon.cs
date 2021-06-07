@@ -1,10 +1,11 @@
 ﻿
+using Models.Entities;
+
 namespace Models.Weapons
 {
     public abstract class Weapon
     {
         public string Name { get; }
-        public virtual byte Damage => _damage;
 
         private readonly byte _damage;
 
@@ -14,6 +15,13 @@ namespace Models.Weapons
             _damage = damage;
         }
 
-        public abstract void Use();
+        public virtual byte GetDamage(AbilityBoard userAbilities)
+        {
+            return _damage;
+        }
+
+        public abstract void Use(Entity user);
+
+        public abstract bool CanUsed(Entity user);
     }
 }

@@ -7,12 +7,14 @@ namespace Models.Entities
     {
         public string Name { get; }
         public byte Health { get; private set; }
-        public bool IsAlive => Health > 0;
-        public byte Strength { get; }
-        public byte Damage => (byte)(Strength + Weapon.Damage);
+        public AbilityBoard Abilities { get; }
         public Weapon Weapon { get; }
         public byte Ammo { get; set; }
         public byte Mana { get; set; }
+
+        public bool IsAlive => Health > 0;
+        public bool CanAttack => Weapon.CanUsed(this);
+        public byte Damage => Weapon.GetDamage(Abilities);
 
         public delegate void DamageTakenHandler(Entity self, byte damage);
         public event DamageTakenHandler Damaged;
@@ -20,14 +22,14 @@ namespace Models.Entities
         public delegate void DiedHandler(Entity self);
         public event DiedHandler Died;
 
-        public Entity(string name, byte strength, Weapon weapon)
+        public Entity(string name, AbilityBoard abilites, Weapon weapon)
         {
             Name = name;
-            Strength = strength;
+            Abilities = abilites;
             Weapon = weapon;
             Health = 100;
-            Ammo = 3;
             Mana = 100;
+            Ammo = 3;
         }
 
         public void ApplyDamage(byte damage)
@@ -46,6 +48,11 @@ namespace Models.Entities
                 Health -= damage;
                 Damaged?.Invoke(this, damage);
             }
+        }
+
+        public void UseWeapon()
+        {
+            Weapon.Use(this);
         }
     }
 }
