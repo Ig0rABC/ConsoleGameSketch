@@ -14,7 +14,9 @@ namespace Models.Weapons
 
         public override byte GetDamage(AbilityBoard userAbilities)
         {
-            return (byte)(base.GetDamage(userAbilities) * (Condition > 0.33f ? Condition : 0.33f) + userAbilities.Strength);
+            var baseDamage = base.GetDamage(userAbilities);
+            var damageDecreaseFactor = Condition > 0.375f ? Condition : 0.375f;
+            return (byte)(baseDamage * damageDecreaseFactor + userAbilities.Strength);
         }
 
         public override void Use(Entity user)

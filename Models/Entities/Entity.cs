@@ -1,5 +1,4 @@
 ﻿using System;
-using Models.Weapons;
 
 namespace Models.Entities
 {
@@ -7,14 +6,13 @@ namespace Models.Entities
     {
         public string Name { get; }
         public byte Health { get; private set; }
-        public AbilityBoard Abilities { get; }
-        public Weapon Weapon { get; }
-        public byte Ammo { get; set; }
         public byte Mana { get; set; }
+        public AbilityBoard Abilities { get; }
+        public Inventory Inventory { get; }
 
         public bool IsAlive => Health > 0;
-        public bool CanAttack => Weapon.CanUsed(this);
-        public byte Damage => Weapon.GetDamage(Abilities);
+        public bool CanAttack => Inventory.ActiveWeapon.CanUsed(this);
+        public byte Damage => Inventory.ActiveWeapon.GetDamage(Abilities);
 
         public delegate void DamageTakenHandler(Entity self, byte damage);
         public event DamageTakenHandler Damaged;
@@ -22,14 +20,13 @@ namespace Models.Entities
         public delegate void DiedHandler(Entity self);
         public event DiedHandler Died;
 
-        public Entity(string name, AbilityBoard abilites, Weapon weapon)
+        public Entity(string name, AbilityBoard abilites, Inventory inventory)
         {
             Name = name;
             Abilities = abilites;
-            Weapon = weapon;
+            Inventory = inventory;
             Health = 100;
             Mana = 100;
-            Ammo = 3;
         }
 
         public void ApplyDamage(byte damage)
@@ -52,7 +49,7 @@ namespace Models.Entities
 
         public void UseWeapon()
         {
-            Weapon.Use(this);
+            Inventory.ActiveWeapon.Use(this);
         }
     }
 }

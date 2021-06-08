@@ -1,17 +1,13 @@
-﻿
-using Models.Entities;
+﻿using Models.Entities;
 
 namespace Models.Weapons
 {
-    public abstract class Weapon
+    public abstract class Weapon : Item
     {
-        public string Name { get; }
-
         private readonly byte _damage;
 
-        public Weapon(string name, byte damage)
+        public Weapon(string name, byte damage) : base(name)
         {
-            Name = name;
             _damage = damage;
         }
 

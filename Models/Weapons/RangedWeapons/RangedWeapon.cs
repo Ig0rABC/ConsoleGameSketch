@@ -2,7 +2,7 @@
 
 namespace Models.Weapons
 {
-    public abstract class RangedWeapon : Weapon
+    public abstract class RangedWeapon<T> : Weapon where T : Ammo
     {
         public RangedWeapon(string name, byte damage) : base(name, damage)
         {
@@ -11,17 +11,18 @@ namespace Models.Weapons
 
         public override byte GetDamage(AbilityBoard userAbilities)
         {
-            return (byte)(base.GetDamage(userAbilities) + userAbilities.Accuracy);
+            var baseDamage = base.GetDamage(userAbilities);
+            return (byte)(baseDamage + userAbilities.Accuracy);
         }
 
         public override void Use(Entity user) {
-            user.Ammo--;
+            user.Inventory.PutOut<T>();
             user.Abilities.ApplyAccuracy();
         }
 
         public override bool CanUsed(Entity user)
         {
-            return user.Ammo > 0;
+            return user.Inventory.Has<T>();
         }
     }
 }

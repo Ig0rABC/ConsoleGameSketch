@@ -1,7 +1,7 @@
 ﻿
 namespace Models.Weapons
 {
-    public sealed class ShortBow : RangedWeapon
+    public sealed class ShortBow : RangedWeapon<Arrow>
     {
         public ShortBow() : base("Short Bow", 22)
         {

@@ -26,7 +26,7 @@ namespace Menus
 
         private void OnAttacked(Entity attacker, Entity victim)
         {
-            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Weapon)} the {victim.Name} with a {attacker.Weapon.Name}.");
+            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Inventory.ActiveWeapon)} the {victim.Name} with a {attacker.Inventory.ActiveWeapon.Name}.");
         }
 
         private void OnMissed(Entity loser)
@@ -34,10 +34,11 @@ namespace Menus
             Console.WriteLine($"{loser.Name} is missed move.");
         }
 
-        private string GetAttackVerb(Weapon weapon) => weapon switch
+        private static string GetAttackVerb(Weapon weapon) => weapon switch
         {
             MeleeWeapon => "striked",
-            RangedWeapon => "shot",
+            RangedWeapon<Gunpowder> => "fired at",
+            RangedWeapon<Ammo> => "shot at",
             _ => "attacked",
         };
 
