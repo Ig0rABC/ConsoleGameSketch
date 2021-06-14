@@ -13,7 +13,15 @@ namespace ConsoleGameSketch
         {
             var client = new Client();
 
-            var player = new Player("Igor", new AbilityBoard(24, 14, 10), new Inventory(new Item[] { new Musket(), new Gunpowder(), new Gunpowder(), new Gunpowder(), new Gunpowder() }));
+            var player = new Player(
+                "Igor",
+                new AbilityBoard(24, 14, 10),
+                new Inventory(new InventoryItem[] {
+                    new Musket(),
+                    new Gunpowder(),
+                    new Gunpowder(),
+                    new Naginata(),
+                }));
 
             var allias = new Entity[] {
                 CreateWithWeapon<Monk, Naginata>(),
@@ -25,7 +33,7 @@ namespace ConsoleGameSketch
                 CreateWithWeapon<Goblin, Knife>(),
                 CreateWithWeapon<Ogre, WoodenClub>(),
                 CreateWithWeapon<Goblin, WoodenClub>(),
-                CreateWithWeapon<Goblin, ShortBow>()
+                new Goblin(new Inventory(new InventoryItem[] { new ShortBow(), new Arrow(), new WoodenClub() }))
             };
             foreach (var e in enemies)
             {
@@ -53,7 +61,7 @@ namespace ConsoleGameSketch
         private static Entity CreateWithWeapon<E, W>() where E : Entity where W : Weapon, new()
         {
             var weapon = new W();
-            var inventory = new Inventory(new Item[] { weapon })
+            var inventory = new Inventory(new InventoryItem[] { weapon })
             {
                 ActiveWeapon = weapon
             };

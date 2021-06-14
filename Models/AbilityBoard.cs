@@ -6,6 +6,7 @@ namespace Models
         public byte Strength { get; private set; }
         public byte Accuracy { get; private set; }
         public byte Magic { get; private set; }
+        public static AbilityBoard Empty => new(0, 0, 0);
 
         public AbilityBoard(byte strength, byte accuracy, byte magic)
         {

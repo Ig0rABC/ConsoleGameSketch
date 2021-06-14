@@ -1,8 +1,8 @@
-﻿using Controllers;
-using Models.Entities;
+﻿using Models.Entities;
+using Controllers;
 using Commands;
 
-namespace Menus
+namespace Menus.Options
 {
     public sealed class AttackOption : MenuOption
     {

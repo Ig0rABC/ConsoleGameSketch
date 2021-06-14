@@ -1,4 +1,5 @@
-﻿
+﻿using Menus.Options;
+
 namespace Menus
 {
     abstract public class Menu

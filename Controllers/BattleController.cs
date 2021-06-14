@@ -1,5 +1,7 @@
-﻿using Models.Battle;
+﻿using System;
+using Models.Battle;
 using Models.Entities;
+using Models.Weapons;
 
 namespace Controllers
 {
@@ -14,6 +16,11 @@ namespace Controllers
 
         public delegate void MissedHandler(Entity loser);
         public event MissedHandler Missed;
+
+        public delegate void ChangedWeaponHandler(Entity entity, Weapon weapon);
+        public event ChangedWeaponHandler ChangedWeapon;
+
+        private Entity Attacker => _battle.Attacker;
 
         private readonly Battle _battle;
         private bool _isAuto;
@@ -34,31 +41,52 @@ namespace Controllers
 
         public override void Update()
         {
-            _battle.Next();
-            if (_battle.Attacker.CanAttack == false)
-                Missed?.Invoke(_battle.Attacker);
-            else if (_battle.Attacker is Player && !_isAuto)
-                PlayerGotMove?.Invoke(_battle.Enemies);
+            if (_battle.Next() is Player && !_isAuto)
+            {
+                var enemies = Attacker.CanAttack ? _battle.Enemies : Array.Empty<Entity>();
+                PlayerGotMove?.Invoke(enemies);
+            }
             else
-                AutoAttack();
+            {
+                AutoMove();
+            }
+        }
+
+        public void OpenInventory()
+        {
+            var controller = new InventoryController(Attacker.Inventory, this);
+            OnChange(controller);
         }
 
         public void Attack(Entity victim)
         {
-            Attacked?.Invoke(_battle.Attacker, victim);
-            victim.ApplyDamage(_battle.Attacker.Damage);
-            _battle.Attacker.UseWeapon();
+            Attacked?.Invoke(Attacker, victim);
+            victim.ApplyDamage(Attacker.Damage);
+            Attacker.UseWeapon();
         }
 
         public void SwitchToAuto()
         {
             _isAuto = true;
-            AutoAttack();
+            AutoMove();
         }
 
-        public void AutoAttack()
+        public void AutoMove()
         {
-            Attack(_battle.SuitableVictim);
+            if (Attacker.CanAttack)
+            {
+                Attack(_battle.SuitableVictim);
+                return;
+            }
+            try
+            {
+                Attacker.Inventory.TakeWeaponWhichCanUsed();
+                ChangedWeapon?.Invoke(Attacker, Attacker.Inventory.ActiveWeapon);
+            }
+            catch
+            {
+                Missed?.Invoke(Attacker);
+            }
         }
     }
 }

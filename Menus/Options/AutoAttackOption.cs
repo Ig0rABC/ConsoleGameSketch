@@ -1,8 +1,7 @@
 ﻿using Controllers;
-using Models.Entities;
 using Commands;
 
-namespace Menus
+namespace Menus.Options
 {
     public sealed class AutoAttackOption : MenuOption
     {

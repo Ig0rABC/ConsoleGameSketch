@@ -2,19 +2,18 @@
 
 namespace Commands
 {
-    public sealed class AutoAttackCommand : ICommand
+    public class OpenInventoryCommand : ICommand
     {
         private readonly BattleController _controller;
 
-        public AutoAttackCommand(BattleController controller)
+        public OpenInventoryCommand(BattleController controller)
         {
             _controller = controller;
         }
 
         public void Execute()
         {
-            _controller.AutoMove();
+            _controller.OpenInventory();
         }
-
     }
 }

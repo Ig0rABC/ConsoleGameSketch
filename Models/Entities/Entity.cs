@@ -11,8 +11,8 @@ namespace Models.Entities
         public Inventory Inventory { get; }
 
         public bool IsAlive => Health > 0;
-        public bool CanAttack => Inventory.ActiveWeapon.CanUsed(this);
-        public byte Damage => Inventory.ActiveWeapon.GetDamage(Abilities);
+        public bool CanAttack => Inventory.CanUseActiveWeapon;
+        public byte Damage => Inventory.ActiveWeaponDamage;
 
         public delegate void DamageTakenHandler(Entity self, byte damage);
         public event DamageTakenHandler Damaged;
@@ -25,15 +25,16 @@ namespace Models.Entities
             Name = name;
             Abilities = abilites;
             Inventory = inventory;
+            Inventory.Owner = this;
             Health = 100;
             Mana = 100;
         }
 
         public void ApplyDamage(byte damage)
         {
-            if (Health == 0)
+            if (!IsAlive)
             {
-                throw new Exception($"{this} is already dead");
+                throw new InvalidOperationException($"{this} is already dead");
             }
             else if (damage >= Health)
             {

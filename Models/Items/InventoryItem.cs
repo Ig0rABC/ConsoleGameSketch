@@ -1,11 +1,11 @@
 ﻿
 namespace Models
 {
-    public abstract class Item
+    public abstract class InventoryItem
     {
         public string Name { get; }
 
-        public Item(string name)
+        public InventoryItem(string name)
         {
             Name = name;
         }

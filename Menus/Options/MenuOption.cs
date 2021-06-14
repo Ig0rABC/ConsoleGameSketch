@@ -1,6 +1,6 @@
 ﻿using Commands;
 
-namespace Menus
+namespace Menus.Options
 {
     public class MenuOption
     {

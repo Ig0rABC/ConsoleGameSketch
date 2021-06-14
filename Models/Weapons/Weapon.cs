@@ -2,7 +2,7 @@
 
 namespace Models.Weapons
 {
-    public abstract class Weapon : Item
+    public abstract class Weapon : InventoryItem
     {
         private readonly byte _damage;
 

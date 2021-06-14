@@ -5,8 +5,8 @@ namespace Commands
 {
     public sealed class AttackCommand : ICommand
     {
-        private BattleController _controller;
-        private Entity _victim;
+        private readonly BattleController _controller;
+        private readonly Entity _victim;
 
         public AttackCommand(BattleController controller, Entity victim)
         {

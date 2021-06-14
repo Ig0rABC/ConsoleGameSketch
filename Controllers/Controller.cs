@@ -6,7 +6,7 @@ namespace Controllers
         public delegate void ChangedHandler(Controller controller);
         public event ChangedHandler Changed;
 
-        private Controller _next;
+        private readonly Controller _next;
 
         public Controller()
         {
@@ -20,9 +20,19 @@ namespace Controllers
 
         public abstract void Update();
 
+        public void DoNothing()
+        {
+
+        }
+
         protected void OnChange()
         {
             Changed?.Invoke(_next);
+        }
+
+        protected void OnChange(Controller next)
+        {
+            Changed?.Invoke(next);
         }
     }
 }

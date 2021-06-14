@@ -1,7 +1,7 @@
 ﻿using Controllers;
 using Commands;
 
-namespace Menus
+namespace Menus.Options
 {
     public sealed class AutoBattleOption : MenuOption
     {

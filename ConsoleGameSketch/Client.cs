@@ -2,6 +2,7 @@
 using Controllers;
 using Models.Entities;
 using Menus;
+using Menus.Options;
 
 namespace ConsoleGameSketch
 {
