@@ -1,18 +1,14 @@
-﻿using Models;
+﻿using System.Linq;
+using Models;
 using Models.Weapons;
-using Models.Items;
 
 namespace Controllers
 {
     public sealed class InventoryController : Controller
     {
-        public bool CanChooseWeapon => _inventory.Has<Weapon>(2);
 
-        public delegate void ChoosingActionHandler();
+        public delegate void ChoosingActionHandler(InventoryItem[] items);
         public event ChoosingActionHandler ChoosingAction;
-
-        public delegate void ChangingWeaponHandler(Weapon[] weapons);
-        public event ChangingWeaponHandler ChangingWeapon;
 
         private readonly Inventory _inventory;
 
@@ -23,17 +19,12 @@ namespace Controllers
 
         public override void Update()
         {
-            ChoosingAction?.Invoke();
+            ChoosingAction?.Invoke(_inventory.GetAll<InventoryItem>());
         }
         
         public void Close()
         {
             OnChange();
-        }
-
-        public void ChangeWeapon()
-        {
-            ChangingWeapon?.Invoke(_inventory.InactiveWeapons);
         }
 
         public void SetWeapon(Weapon weapon)

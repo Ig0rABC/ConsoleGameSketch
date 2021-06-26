@@ -80,8 +80,9 @@ namespace Controllers
             }
             try
             {
-                Attacker.Inventory.TakeWeaponWhichCanUsed();
-                ChangedWeapon?.Invoke(Attacker, Attacker.Inventory.ActiveWeapon);
+                var weapon = Attacker.Inventory.WeaponForAutoChange;
+                ChangedWeapon?.Invoke(Attacker, weapon);
+                Attacker.Inventory.ActiveWeapon = weapon;
             }
             catch
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Models;
 using Models.Weapons;
 using Controllers;
 using Menus.Options;
@@ -15,7 +16,6 @@ namespace Menus
         {
             _controller = controller;
             _controller.ChoosingAction += OnChoosingAction;
-            _controller.ChangingWeapon += OnChangingWeapon;
             _controller.Changed += OnChanged;
         }
 
@@ -23,24 +23,16 @@ namespace Menus
         {
             _controller.Changed -= OnChanged;
             _controller.ChoosingAction -= OnChoosingAction;
-            _controller.ChangingWeapon -= OnChangingWeapon;
         }
 
-        public void OnChoosingAction()
+        public void OnChoosingAction(InventoryItem[] items)
         {
             Console.WriteLine("What do you want?");
             var options = new List<MenuOption>();
-            if (_controller.CanChooseWeapon)
-                options.Add(new ChangeWeaponOption(_controller));
-            options.Add(new CloseInventoryOption(_controller));
-            OnPlayerGotInput(options.ToArray());
-        }
 
-        public void OnChangingWeapon(Weapon[] weapons)
-        {
-            Console.WriteLine("Your weapons:");
-            var options = weapons.Select(w => new SetWeaponOption(_controller, w)).ToList<MenuOption>();
-            options.Add(new CancelOption(_controller));
+            var weaponOptions = items.OfType<Weapon>().Select(w => new SetWeaponOption(_controller, w));
+            options = options.Concat(weaponOptions).ToList();
+
             OnPlayerGotInput(options.ToArray());
         }
     }

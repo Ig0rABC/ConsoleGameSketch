@@ -8,17 +8,27 @@ namespace Models
 {
     public class Inventory {
 
-        public Entity Owner { private get; set; }
-        public byte ActiveWeaponDamage => ActiveWeapon.GetDamage(Owner.Abilities);
-        public bool CanUseActiveWeapon => ActiveWeapon.CanUsed(Owner);
-        public Weapon[] InactiveWeapons => _items.OfType<Weapon>().Where(w => !w.Equals(ActiveWeapon)).ToArray();
+        public byte ActiveWeaponDamage => ActiveWeapon.GetDamage(_owner.Abilities);
+        public bool CanUseActiveWeapon => ActiveWeapon.CanUsed(_owner);
+        public Weapon[] WeaponsForChange => _items.OfType<Weapon>().Where(w => !w.Equals(ActiveWeapon) && w.CanUsed(_owner)).ToArray();
+        public Weapon WeaponForAutoChange => WeaponsForChange.First();
 
+        private Entity _owner;
         private Weapon _activeWeapon;
         private readonly List<InventoryItem> _items;
 
         public Inventory(InventoryItem[] items)
         {
             _items = new List<InventoryItem>(items);
+        }
+
+        public Entity Owner {
+            set
+            {
+                if (_owner != null)
+                    throw new InvalidOperationException("Cannot set owner if he is already set");
+                _owner = value;
+            }
         }
 
         public Weapon ActiveWeapon
@@ -32,14 +42,9 @@ namespace Models
             set
             {
                 if (!_items.Contains(value))
-                    throw new ArgumentException($"Specified weapon {value} must be in inventory");
+                    throw new InvalidOperationException($"Specified weapon {value} must be in inventory");
                 _activeWeapon = value;
             }
-        }
-
-        public void TakeWeaponWhichCanUsed()
-        {
-            _activeWeapon = _items.OfType<Weapon>().First(w => w.CanUsed(Owner));
         }
 
         public void PutIn(InventoryItem item)
