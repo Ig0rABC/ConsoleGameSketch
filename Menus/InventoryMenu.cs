@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Models;
+using Models.Items;
 using Models.Weapons;
 using Controllers;
 using Menus.Options;
@@ -28,12 +28,11 @@ namespace Menus
         public void OnChoosingAction(InventoryItem[] items)
         {
             Console.WriteLine("What do you want?");
-            var options = new List<MenuOption>();
-
+            var options = Array.Empty<MenuOption>();
+            var itemOptions = items.OfType<UsableItem>().Select(i => new UseItemOption(_controller, i));
             var weaponOptions = items.OfType<Weapon>().Select(w => new SetWeaponOption(_controller, w));
-            options = options.Concat(weaponOptions).ToList();
-
-            OnPlayerGotInput(options.ToArray());
+            options = options.Concat(itemOptions).Concat(weaponOptions).ToArray();
+            OnPlayerGotInput(options);
         }
     }
 }

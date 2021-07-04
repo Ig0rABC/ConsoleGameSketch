@@ -10,6 +10,9 @@ namespace Models.Entities
         public AbilityBoard Abilities { get; }
         public Inventory Inventory { get; }
 
+        public const byte HealthLimit = 100;
+        public const byte ManaLimit = 100;
+
         public bool IsAlive => Health > 0;
         public bool CanAttack => Inventory.CanUseActiveWeapon;
         public byte Damage => Inventory.ActiveWeaponDamage;
@@ -26,8 +29,8 @@ namespace Models.Entities
             Abilities = abilites;
             Inventory = inventory;
             Inventory.Owner = this;
-            Health = 100;
-            Mana = 100;
+            Health = HealthLimit;
+            Mana = ManaLimit;
         }
 
         public void ApplyDamage(byte damage)
@@ -45,6 +48,22 @@ namespace Models.Entities
             {
                 Health -= damage;
                 Damaged?.Invoke(this, damage);
+            }
+        }
+
+        public void Heal(byte recovery)
+        {
+            if (!IsAlive)
+            {
+                throw new InvalidOperationException($"{this} is dead and cannot be healed");
+            }
+            else if (Health + recovery > HealthLimit)
+            {
+                Health = HealthLimit;
+            }
+            else
+            {
+                Health += recovery;
             }
         }
 

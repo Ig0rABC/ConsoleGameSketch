@@ -4,6 +4,7 @@ using Models;
 using Models.Entities;
 using Models.Battle;
 using Models.Weapons;
+using Models.Items.Usable;
 
 namespace ConsoleGameSketch
 {
@@ -21,6 +22,7 @@ namespace ConsoleGameSketch
                     new Gunpowder(),
                     new Gunpowder(),
                     new Naginata(),
+                    new MedicialHerb()
                 }));
 
             var allias = new Entity[] {

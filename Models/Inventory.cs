@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Models.Entities;
+using Models.Items;
 using Models.Weapons;
 
 namespace Models
@@ -42,9 +43,17 @@ namespace Models
             set
             {
                 if (!_items.Contains(value))
-                    throw new InvalidOperationException($"Specified weapon {value} must be in inventory");
+                    throw new InvalidOperationException($"Specified weapon {value} must be in inventory for activate");
                 _activeWeapon = value;
             }
+        }
+
+        public void UseItem(UsableItem item)
+        {
+            if (!_items.Contains(item))
+                throw new InvalidOperationException($"Specified item {item} must be in inventory for use");
+            item.Use(_owner);
+            _items.Remove(item);
         }
 
         public void PutIn(InventoryItem item)

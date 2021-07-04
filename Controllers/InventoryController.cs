@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Models;
+﻿using Models;
+using Models.Items;
 using Models.Weapons;
 
 namespace Controllers
@@ -30,6 +30,12 @@ namespace Controllers
         public void SetWeapon(Weapon weapon)
         {
             _inventory.ActiveWeapon = weapon;
+            OnChange();
+        }
+
+        public void UseItem(UsableItem item)
+        {
+            _inventory.UseItem(item);
             OnChange();
         }
     }

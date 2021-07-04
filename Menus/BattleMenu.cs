@@ -62,9 +62,9 @@ namespace Menus
             if (enemies.Length == 0)
                 Console.WriteLine("To attack you must change weapon");
             var options = enemies.Select(e => new AttackOption(_controller, e)).ToList<MenuOption>();
+            options.Add(new OpenInventoryOption(_controller));
             options.Add(new AutoAttackOption(_controller));
             options.Add(new AutoBattleOption(_controller));
-            options.Add(new OpenInventoryOption(_controller));
             OnPlayerGotInput(options.ToArray());
         }
     }
