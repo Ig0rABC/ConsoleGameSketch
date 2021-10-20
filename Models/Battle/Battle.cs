@@ -11,6 +11,17 @@ namespace Models.Battle
         public event EndedHandler Won;
 
         public Entity[] Enemies => Opposition.AliveMembers;
+        public Entity[] Allies
+        {
+            get
+            {
+                if (_allies.IterationsCount == 0)
+                    return _allies.AliveMembers;
+                else
+                    return (_allies.Has(Attacker) ? _allies : _enemies).AliveMembers;
+            }
+        }
+
         public Entity SuitableVictim => Opposition.ChooseVictim(Attacker);
 
         private readonly Party _allies;

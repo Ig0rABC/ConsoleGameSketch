@@ -46,17 +46,6 @@ namespace ConsoleGameSketch
             Console.WriteLine($"{dead.Name} is died");
         }
 
-        public void OnPlayerDied(Entity player)
-        {
-            Console.WriteLine("You are died!");
-            Stop();
-        }
-
-        public void OnPlayerDamaged(Entity player, byte damage)
-        {
-            Console.WriteLine($"You recieved {damage} damage. Your current health: {player.Health}");
-        }
-
         private void OnPlayerGotInput(MenuOption[] options)
         {
             byte index = 1;

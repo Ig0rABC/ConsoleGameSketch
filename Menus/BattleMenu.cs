@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using Models.Entities;
 using Models.Weapons;
 using Controllers;
@@ -56,12 +56,17 @@ namespace Menus
             _ => "attacked",
         };
 
-        private void OnPlayerGotMove(Entity[] enemies)
+        private void OnPlayerGotMove(Entity attacker, Entity[] enemies, Entity[] allies)
         {
-            Console.WriteLine("Your move..");
+            Console.WriteLine("Your party..");
+            foreach (var ally in allies)
+                 Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.Damage} Dmg.)");
+            Console.WriteLine($"\n{attacker.Name}'s move..");
             if (enemies.Length == 0)
                 Console.WriteLine("To attack you must change weapon");
-            var options = enemies.Select(e => new AttackOption(_controller, e)).ToList<MenuOption>();
+            var options = new List<MenuOption>();
+            foreach (var e in enemies)
+                options.Add(new AttackOption(_controller, e));
             options.Add(new OpenInventoryOption(_controller));
             options.Add(new AutoAttackOption(_controller));
             options.Add(new AutoBattleOption(_controller));

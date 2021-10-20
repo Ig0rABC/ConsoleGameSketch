@@ -1,4 +1,5 @@
 ﻿using System;
+using Models;
 using Models.Battle;
 using Models.Entities;
 using Models.Weapons;
@@ -8,7 +9,7 @@ namespace Controllers
     public sealed class BattleController : Controller
     {
 
-        public delegate void PlayerGotMoveHandler(Entity[] enemies);
+        public delegate void PlayerGotMoveHandler(Entity attacker, Entity[] enemies, Entity[] allias);
         public event PlayerGotMoveHandler PlayerGotMove;
 
         public delegate void AttackedHandler(Entity attacker, Entity victim);
@@ -41,10 +42,11 @@ namespace Controllers
 
         public override void Update()
         {
-            if (_battle.Next() is Player && !_isAuto)
+            _battle.Next();
+            if (Game.IsGuided(_battle.Attacker) && !_isAuto)
             {
                 var enemies = Attacker.CanAttack ? _battle.Enemies : Array.Empty<Entity>();
-                PlayerGotMove?.Invoke(enemies);
+                PlayerGotMove?.Invoke(_battle.Attacker, enemies, _battle.Allies);
             }
             else
             {

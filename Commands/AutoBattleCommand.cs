@@ -4,7 +4,7 @@ namespace Commands
 {
     public sealed class AutoBattleCommand : ICommand
     {
-        private BattleController _controller;
+        private readonly BattleController _controller;
 
         public AutoBattleCommand(BattleController controller)
         {

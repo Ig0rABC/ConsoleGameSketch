@@ -55,8 +55,6 @@ namespace Models.Battle
         {
             if (!AliveMembers.Any())
                 Defeated?.Invoke();
-            else if (_attackerIndex >= AliveMembers.Length)
-                _attackerIndex = (byte)(AliveMembers.Length - 1);
         }
     }
 }
