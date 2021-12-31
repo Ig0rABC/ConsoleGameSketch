@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Models.Entities;
 using Models.Weapons;
@@ -56,21 +57,32 @@ namespace Menus
             _ => "attacked",
         };
 
-        private void OnPlayerGotMove(Entity attacker, Entity[] enemies, Entity[] allies)
+        private void OnPlayerGotMove(Entity attacker, IEnumerable<Entity> enemies, IEnumerable<Entity> allies)
         {
-            Console.WriteLine("Your party..");
+            Console.WriteLine("Your party:");
             foreach (var ally in allies)
                  Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.Damage} Dmg.)");
             Console.WriteLine($"\n{attacker.Name}'s move..");
-            if (enemies.Length == 0)
-                Console.WriteLine("To attack you must change weapon");
-            var options = new List<MenuOption>();
-            foreach (var e in enemies)
-                options.Add(new AttackOption(_controller, e));
-            options.Add(new OpenInventoryOption(_controller));
-            options.Add(new AutoAttackOption(_controller));
-            options.Add(new AutoBattleOption(_controller));
-            OnPlayerGotInput(options.ToArray());
+            IEnumerable<MenuOption> options;
+            if (!attacker.CanAttack)
+            {
+                Console.WriteLine("To attack you must change weapon!");
+                options = new MenuOption[] {
+                    new OpenInventoryOption(_controller),
+                    new AutoBattleOption(_controller)
+                };
+            }
+            else
+            {
+                options = enemies
+                    .Select(e => new AttackOption(_controller, e))
+                    .Concat(new MenuOption[] {
+                        new OpenInventoryOption(_controller),
+                        new AutoAttackOption(_controller),
+                        new AutoBattleOption(_controller)
+                    });
+            }
+            OnPlayerGotInput(options);
         }
     }
 }

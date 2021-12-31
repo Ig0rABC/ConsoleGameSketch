@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Models;
 using Models.Battle;
 using Models.Entities;
@@ -9,7 +10,7 @@ namespace Controllers
     public sealed class BattleController : Controller
     {
 
-        public delegate void PlayerGotMoveHandler(Entity attacker, Entity[] enemies, Entity[] allias);
+        public delegate void PlayerGotMoveHandler(Entity attacker, IEnumerable<Entity> enemies, IEnumerable<Entity> allias);
         public event PlayerGotMoveHandler PlayerGotMove;
 
         public delegate void AttackedHandler(Entity attacker, Entity victim);
@@ -38,15 +39,15 @@ namespace Controllers
             _battle = battle;
             _isAuto = false;
             _battle.Won += OnChange;
+            _battle.Defeated += () => OnChange(null);
         }
 
         public override void Update()
         {
             _battle.Next();
-            if (Game.IsGuided(_battle.Attacker) && !_isAuto)
+            if (Game.Guided.Contains(_battle.Attacker) && !_isAuto)
             {
-                var enemies = Attacker.CanAttack ? _battle.Enemies : Array.Empty<Entity>();
-                PlayerGotMove?.Invoke(_battle.Attacker, enemies, _battle.Allies);
+                PlayerGotMove?.Invoke(_battle.Attacker, _battle.Enemies, _battle.Allies);
             }
             else
             {
@@ -80,16 +81,14 @@ namespace Controllers
                 Attack(_battle.SuitableVictim);
                 return;
             }
-            try
-            {
-                var weapon = Attacker.Inventory.WeaponForAutoChange;
-                ChangedWeapon?.Invoke(Attacker, weapon);
-                Attacker.Inventory.ActiveWeapon = weapon;
-            }
-            catch
+            var weapon = Attacker.Inventory.WeaponForAutoChange;
+            if (weapon == null)
             {
                 Missed?.Invoke(Attacker);
+                return;
             }
+            ChangedWeapon?.Invoke(Attacker, weapon);
+            Attacker.Inventory.ActiveWeapon = weapon;
         }
     }
 }

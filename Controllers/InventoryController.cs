@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using System.Collections.Generic;
+using Models;
 using Models.Items;
 using Models.Weapons;
 
@@ -7,7 +8,7 @@ namespace Controllers
     public sealed class InventoryController : Controller
     {
 
-        public delegate void ChoosingActionHandler(InventoryItem[] items);
+        public delegate void ChoosingActionHandler(IEnumerable<InventoryItem> items);
         public event ChoosingActionHandler ChoosingAction;
 
         private readonly Inventory _inventory;
@@ -19,7 +20,8 @@ namespace Controllers
 
         public override void Update()
         {
-            ChoosingAction?.Invoke(_inventory.GetAll<InventoryItem>());
+            var items = _inventory.GetAll<InventoryItem>();
+            ChoosingAction?.Invoke(items);
         }
         
         public void Close()

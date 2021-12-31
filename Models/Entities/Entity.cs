@@ -4,21 +4,21 @@ namespace Models.Entities
 {
     public abstract class Entity
     {
+        public static readonly byte HealthLimit = 100;
+        public static readonly byte ManaLimit = 100;
+
         public string Name { get; }
         public byte Health { get; private set; }
         public byte Mana { get; set; }
         public AbilityBoard Abilities { get; }
         public Inventory Inventory { get; }
 
-        public const byte HealthLimit = 100;
-        public const byte ManaLimit = 100;
-
         public bool IsAlive => Health > 0;
         public bool CanAttack => Inventory.CanUseActiveWeapon;
         public byte Damage => Inventory.ActiveWeaponDamage;
 
-        public delegate void DamageTakenHandler(Entity self, byte damage);
-        public event DamageTakenHandler Damaged;
+        public delegate void DamagedHandler(Entity self, byte damage);
+        public event DamagedHandler Damaged;
 
         public delegate void DiedHandler(Entity self);
         public event DiedHandler Died;
@@ -69,6 +69,8 @@ namespace Models.Entities
 
         public void UseWeapon()
         {
+            if (!CanAttack)
+                throw new InvalidOperationException();
             Inventory.ActiveWeapon.Use(this);
         }
     }

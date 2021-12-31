@@ -9,18 +9,19 @@ namespace Models
 {
     public class Inventory {
 
+        public static Inventory Empty => new(Array.Empty<InventoryItem>());
         public byte ActiveWeaponDamage => ActiveWeapon.GetDamage(_owner.Abilities);
         public bool CanUseActiveWeapon => ActiveWeapon.CanUsed(_owner);
-        public Weapon[] WeaponsForChange => _items.OfType<Weapon>().Where(w => !w.Equals(ActiveWeapon) && w.CanUsed(_owner)).ToArray();
-        public Weapon WeaponForAutoChange => WeaponsForChange.First();
+        public IEnumerable<Weapon> WeaponsForChange => _items.OfType<Weapon>().Where(IsWeaponRelevantForChange);
+        public Weapon WeaponForAutoChange => _items.OfType<Weapon>().First(IsWeaponRelevantForChange);
 
         private Entity _owner;
         private Weapon _activeWeapon;
-        private readonly List<InventoryItem> _items;
+        private List<InventoryItem> _items;
 
-        public Inventory(InventoryItem[] items)
+        public Inventory(IEnumerable<InventoryItem> items)
         {
-            _items = new List<InventoryItem>(items);
+            _items = items.ToList();
         }
 
         public Entity Owner {
@@ -32,17 +33,22 @@ namespace Models
             }
         }
 
+        private bool IsWeaponRelevantForChange(Weapon weapon)
+        {
+            return !weapon.Equals(_activeWeapon) && weapon.CanUsed(_owner);
+        }
+
         public Weapon ActiveWeapon
         {
             get
             {
                 if (_activeWeapon == null)
-                    _activeWeapon = _items.OfType<Weapon>().First();
+                    _activeWeapon = WeaponForAutoChange;
                 return _activeWeapon;
             }
             set
             {
-                if (!_items.Contains(value))
+                if (!Has(value))
                     throw new InvalidOperationException($"Specified weapon {value} must be in inventory for activate");
                 _activeWeapon = value;
             }
@@ -50,10 +56,40 @@ namespace Models
 
         public void UseItem(UsableItem item)
         {
-            if (!_items.Contains(item))
+            if (!Has(item))
                 throw new InvalidOperationException($"Specified item {item} must be in inventory for use");
             item.Use(_owner);
             _items.Remove(item);
+        }
+
+        public void UseItem<T>() where T : UsableItem
+        {
+            GetOne<T>().Use(_owner);
+        }
+
+        public bool Has(InventoryItem item)
+        {
+            return _items.Contains(item);
+        }
+
+        public bool Has<T>(byte count = 1) where T : InventoryItem
+        {
+            return GetAll<T>().Count() >= count;
+        }
+
+        public T GetOne<T>() where T : InventoryItem
+        {
+            return _items.OfType<T>().First();
+        }
+
+        public IEnumerable<T> Get<T>(byte count) where T : InventoryItem
+        {
+            return _items.OfType<T>().Take(count);
+        }
+
+        public IEnumerable<T> GetAll<T>() where T : InventoryItem
+        {
+            return _items.OfType<T>();
         }
 
         public void PutIn(InventoryItem item)
@@ -61,32 +97,18 @@ namespace Models
             _items.Add(item);
         }
 
-        public T[] Get<T>(byte count = 1) where T : InventoryItem
+        public IEnumerable<T> PutOut<T>(byte count = 1) where T : InventoryItem
         {
-            return _items.OfType<T>().Take(count).ToArray();
+            var items = Get<T>(count);
+            _items = _items.Except(items).ToList();
+            return items;
         }
 
-        public T[] GetAll<T>() where T : InventoryItem
+        public IEnumerable<T> PutOutAll<T>() where T : InventoryItem
         {
-            return _items.OfType<T>().ToArray();
-        }
-
-        public T[] PutOut<T>(byte count = 1) where T : InventoryItem
-        {
-            var items = new List<T>();
-            foreach (var item in _items.OfType<T>())
-            {
-                _items.Remove(item);
-                items.Add(item);
-                if (items.Count == count)
-                    break;
-            }
-            return items.ToArray();
-        }
-
-        public bool Has<T>(byte count = 1) where T : InventoryItem
-        {
-            return _items.OfType<T>().Count() >= count;
+            var items = GetAll<T>();
+            _items = _items.Except(items).ToList();
+            return items;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Models;
 using Models.Entities;
 using Models.Battle;
 
@@ -11,9 +12,9 @@ namespace ModelsUnitTests
         [TestMethod]
         public void FirstMoverFromAllies()
         {
-            var allies = new[] { new Player("Test Player", 30) };
-            var enemies = new[] { new Ogre(), new Ogre() };
-            var battle = new Battle(allies, enemies);
+            var allies = new[] { new Person("Test Player", AbilityBoard.Empty, Inventory.Empty) };
+            var enemies = new[] { new Ogre(Inventory.Empty), new Ogre(Inventory.Empty) };
+            var battle = new Battle(new Party(allies), new Party(enemies));
 
             battle.Next();
 
@@ -23,9 +24,9 @@ namespace ModelsUnitTests
         [TestMethod]
         public void EnemiesStartMovingAfterAllAlliesHaveBeenMoved()
         {
-            Entity[] allies = new[] { new Player("Test Player", 30) };
-            Entity[] enemies = new [] { new Ogre(), new Ogre() };
-            var battle = new Battle(allies, enemies);
+            Entity[] allies = new[] { new Person("Test Player", AbilityBoard.Empty, Inventory.Empty) };
+            Entity[] enemies = new [] { new Ogre(Inventory.Empty), new Ogre(Inventory.Empty) };
+            var battle = new Battle(new Party(allies), new Party(enemies));
 
             for (byte i = 0; i < allies.Length; i++)
                 battle.Next();
@@ -37,14 +38,14 @@ namespace ModelsUnitTests
         [TestMethod]
         public void EnemiesAreEnemies()
         {
-            Entity[] allies = new[] { new Player("Test Player", 30) };
-            Entity[] enemies = new[] { new Ogre(), new Ogre() };
-            var battle = new Battle(allies, enemies);
+            Entity[] allies = new[] { new Person("Test Player", AbilityBoard.Empty, Inventory.Empty) };
+            Entity[] enemies = new[] { new Ogre(Inventory.Empty), new Ogre(Inventory.Empty) };
+            var battle = new Battle(new Party(allies), new Party(enemies));
 
             battle.Next();
 
             for (byte i = 0; i < 2; i++)
-                Assert.AreEqual(enemies[i], battle.Enemies[i]);
+                Assert.AreEqual(enemies[i], battle.Enemies.ElementAt(i));
         }
     }
 }

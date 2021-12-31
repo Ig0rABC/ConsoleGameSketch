@@ -5,7 +5,7 @@ namespace Menus.Options
 {
     public sealed class CloseInventoryOption : MenuOption
     {
-        public CloseInventoryOption(InventoryController controller) : base($"Quit", new CloseInventoryCommand(controller))
+        public CloseInventoryOption(InventoryController controller) : base("Quit", new CloseInventoryCommand(controller))
         {
 
         }

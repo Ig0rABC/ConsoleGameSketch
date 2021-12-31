@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Models;
 using Models.Entities;
 using Models.Battle;
 
@@ -10,7 +11,7 @@ namespace ModelsUnitTests
         [TestMethod]
         public void AfterOneMovePartyWithOneMemberIncrementingIterationsCount()
         {
-            var player = new Player("Test Player", 30);
+            var player = new Person("Test Player", AbilityBoard.Empty, Inventory.Empty);
             var party = new Party(new Entity[] { player });
 
             party.Next();

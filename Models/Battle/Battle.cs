@@ -1,4 +1,5 @@
-﻿using Models.Entities;
+﻿using System.Collections.Generic;
+using Models.Entities;
 
 namespace Models.Battle
 {
@@ -10,39 +11,41 @@ namespace Models.Battle
         public event EndedHandler Defeated;
         public event EndedHandler Won;
 
-        public Entity[] Enemies => Opposition.AliveMembers;
-        public Entity[] Allies
+        public IEnumerable<Entity> Enemies => VictimParty.AliveMembers;
+        public IEnumerable<Entity> Allies
         {
             get
             {
-                if (_allies.IterationsCount == 0)
-                    return _allies.AliveMembers;
+                if (_playerParty.IterationsCount == 0)
+                    return _playerParty.AliveMembers;
                 else
-                    return (_allies.Has(Attacker) ? _allies : _enemies).AliveMembers;
+                    return (_playerParty.Has(Attacker) ? _playerParty : _npcParty).AliveMembers;
             }
         }
 
-        public Entity SuitableVictim => Opposition.ChooseVictim(Attacker);
+        public Entity SuitableVictim => VictimParty.ChooseVictim(Attacker);
 
-        private readonly Party _allies;
-        private readonly Party _enemies;
+        private readonly Party _playerParty;
+        private readonly Party _npcParty;
 
-        public Battle(Entity[] allies, Entity[] enemies)
+        public Battle(Party playerParty, Party npcParty)
         {
-            _allies = new Party(allies);
-            _enemies = new Party(enemies);
-            _allies.Defeated += OnDefeated;
-            _enemies.Defeated += OnWon;
+            _playerParty = playerParty;
+            _npcParty = npcParty;
+            _playerParty.Defeated += OnDefeated;
+            _npcParty.Defeated += OnWon;
         }
 
         public Entity Next()
         {
-            Attacker = MovingParty.Next();
+            Attacker = AttackerParty.Next();
             return Attacker;
         }
 
-        private Party Opposition => _allies.Has(Attacker) ? _enemies : _allies;
-        private Party MovingParty => _allies.IterationsCount == _enemies.IterationsCount ? _allies : _enemies;
+        private Party VictimParty => _playerParty.Has(Attacker) ? _npcParty : _playerParty;
+        private Party AttackerParty => _playerParty.IterationsCount == _npcParty.IterationsCount
+            ? _playerParty
+            : _npcParty;
 
         private void OnDefeated()
         {

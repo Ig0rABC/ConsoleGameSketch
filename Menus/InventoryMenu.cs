@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using Models;
 using Models.Items;
 using Models.Weapons;
@@ -25,13 +26,12 @@ namespace Menus
             _controller.ChoosingAction -= OnChoosingAction;
         }
 
-        public void OnChoosingAction(InventoryItem[] items)
+        public void OnChoosingAction(IEnumerable<InventoryItem> items)
         {
             Console.WriteLine("What do you want?");
-            var options = Array.Empty<MenuOption>();
             var itemOptions = items.OfType<UsableItem>().Select(i => new UseItemOption(_controller, i));
             var weaponOptions = items.OfType<Weapon>().Select(w => new SetWeaponOption(_controller, w));
-            options = options.Concat(itemOptions).Concat(weaponOptions).ToArray();
+            var options = itemOptions.Cast<MenuOption>().Concat(weaponOptions);
             OnPlayerGotInput(options);
         }
     }

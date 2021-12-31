@@ -31,8 +31,8 @@ namespace ConsoleGameSketch
 
             var monk = CreateWithWeapon<Monk, Naginata>();
             var allias = new Entity[] {
+                player,
                 monk,
-                player
             };
 
             Game.Guided.Add(player);
@@ -53,18 +53,13 @@ namespace ConsoleGameSketch
                 e.Damaged += client.OnDamaged;
                 e.Died += client.OnDied;
             }
-            foreach (Entity a in allias)
+            foreach (var a in allias)
             {
-                if (a is Person == false)
-                {
-                    a.Damaged += client.OnDamaged;
-                    a.Died += client.OnDied;
-                }
+                a.Damaged += client.OnDamaged;
+                a.Died += client.OnDied;
             }
-            player.Damaged += client.OnDamaged;
-            player.Died += client.OnDied;
 
-            var battle = new Battle(allias, enemies);
+            var battle = new Battle(new Party(allias), new Party(enemies));
             var controller = new BattleController(battle);
 
             client.Controller = controller;

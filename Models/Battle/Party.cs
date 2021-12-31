@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using Models.Entities;
 
 namespace Models.Battle
@@ -10,27 +11,26 @@ namespace Models.Battle
         
         public delegate void DefeatedHandler();
         public event DefeatedHandler Defeated;
-        public Entity[] AliveMembers => _members.Where(m => m.IsAlive).ToArray();
+        public IEnumerable<Entity> AliveMembers => _members.Where(m => m.IsAlive);
         
-        private readonly Entity[] _members;
+        private readonly IEnumerable<Entity> _members;
         private byte _attackerIndex;
 
-        public Party(Entity[] members)
+        public Party(IEnumerable<Entity> members)
         {
             _members = members;
-            IterationsCount = 0;
             _attackerIndex = 0;
+            IterationsCount = 0;
             foreach (var member in _members)
                 member.Died += OnDied;
         }
 
         public Entity Next()
         {
-            var attacker = AliveMembers[_attackerIndex++];
-            if (_attackerIndex >= AliveMembers.Length)
+            var attacker = AliveMembers.ElementAt(_attackerIndex++);
+            if (_attackerIndex >= AliveMembers.Count())
             {
-                IterationsCount++;
-                _attackerIndex = 0;
+                StartNewIteration();
             }
             return attacker;
         }
@@ -49,6 +49,12 @@ namespace Models.Battle
                 if (member.Health <= attacker.Damage && member.Health > victim.Health && member.Damage > victim.Damage)
                     victim = member;
             return victim;
+        }
+
+        private void StartNewIteration()
+        {
+            _attackerIndex = 0;
+            IterationsCount++;
         }
 
         private void OnDied(Entity dead)
