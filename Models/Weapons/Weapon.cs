@@ -1,20 +1,18 @@
-﻿using Models.Entities;
+﻿using Models.Damages;
+using Models.Entities;
 
 namespace Models.Weapons
 {
     public abstract class Weapon : InventoryItem
     {
-        private readonly byte _damage;
+        public virtual byte Power { get; }
 
-        public Weapon(string name, byte damage) : base(name)
+        public Weapon(string name, byte power) : base(name)
         {
-            _damage = damage;
+            Power = power;
         }
 
-        public virtual byte GetDamage(AbilityBoard userAbilities)
-        {
-            return _damage;
-        }
+        public abstract Damage GetDamage(Entity user);
 
         public abstract void Use(Entity user);
 

@@ -17,6 +17,7 @@ namespace ConsoleGameSketch
             var player = new Person(
                 "Igor",
                 new AbilityBoard(24, 14, 10),
+                new Resistances { Flame = 1, Steel = 1, FireArm = 1 },
                 new Inventory(new InventoryItem[] {
                     new Musket(),
                     new Gunpowder(),

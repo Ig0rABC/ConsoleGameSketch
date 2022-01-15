@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Models.Entities;
 using Models.Items;
+using Models.Damages;
 using Models.Weapons;
 
 namespace Models
@@ -10,10 +11,10 @@ namespace Models
     public class Inventory {
 
         public static Inventory Empty => new(Array.Empty<InventoryItem>());
-        public byte ActiveWeaponDamage => ActiveWeapon.GetDamage(_owner.Abilities);
+        public Damage ActiveWeaponDamage => ActiveWeapon.GetDamage(_owner);
         public bool CanUseActiveWeapon => ActiveWeapon.CanUsed(_owner);
-        public IEnumerable<Weapon> WeaponsForChange => _items.OfType<Weapon>().Where(IsWeaponRelevantForChange);
-        public Weapon WeaponForAutoChange => _items.OfType<Weapon>().First(IsWeaponRelevantForChange);
+        public IEnumerable<Weapon> WeaponsForChange => GetAll<Weapon>().Where(IsWeaponRelevantForChange);
+        public Weapon WeaponForAutoChange => GetAll<Weapon>().First(IsWeaponRelevantForChange);
 
         private Entity _owner;
         private Weapon _activeWeapon;
@@ -79,12 +80,15 @@ namespace Models
 
         public T GetOne<T>() where T : InventoryItem
         {
-            return _items.OfType<T>().First();
+            var items = GetAll<T>();
+            if (!items.Any())
+                return null;
+            return items.First();
         }
 
         public IEnumerable<T> Get<T>(byte count) where T : InventoryItem
         {
-            return _items.OfType<T>().Take(count);
+            return GetAll<T>().Take(count);
         }
 
         public IEnumerable<T> GetAll<T>() where T : InventoryItem
@@ -95,6 +99,13 @@ namespace Models
         public void PutIn(InventoryItem item)
         {
             _items.Add(item);
+        }
+
+        public T PutOutOne<T>() where T : InventoryItem
+        {
+            var item = GetOne<T>();
+            _items.Remove(item);
+            return item;
         }
 
         public IEnumerable<T> PutOut<T>(byte count = 1) where T : InventoryItem

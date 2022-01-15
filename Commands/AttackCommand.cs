@@ -6,17 +6,17 @@ namespace Commands
     public sealed class AttackCommand : ICommand
     {
         private readonly BattleController _controller;
-        private readonly Entity _victim;
+        private readonly Entity _target;
 
-        public AttackCommand(BattleController controller, Entity victim)
+        public AttackCommand(BattleController controller, Entity target)
         {
             _controller = controller;
-            _victim = victim;
+            _target = target;
         }
 
         public void Execute()
         {
-            _controller.Attack(_victim);
+            _controller.Attack(_target);
         }
 
     }

@@ -11,7 +11,7 @@ namespace Models.Battle
         public event EndedHandler Defeated;
         public event EndedHandler Won;
 
-        public IEnumerable<Entity> Enemies => VictimParty.AliveMembers;
+        public IEnumerable<Entity> Enemies => TargetParty.AliveMembers;
         public IEnumerable<Entity> Allies
         {
             get
@@ -23,7 +23,7 @@ namespace Models.Battle
             }
         }
 
-        public Entity SuitableVictim => VictimParty.ChooseVictim(Attacker);
+        public Entity RelevantTarget => TargetParty.FindRelevantTarget(Attacker);
 
         private readonly Party _playerParty;
         private readonly Party _npcParty;
@@ -42,7 +42,7 @@ namespace Models.Battle
             return Attacker;
         }
 
-        private Party VictimParty => _playerParty.Has(Attacker) ? _npcParty : _playerParty;
+        private Party TargetParty => _playerParty.Has(Attacker) ? _npcParty : _playerParty;
         private Party AttackerParty => _playerParty.IterationsCount == _npcParty.IterationsCount
             ? _playerParty
             : _npcParty;

@@ -1,4 +1,6 @@
-﻿
+﻿using Models.Entities;
+using Models.Damages;
+
 namespace Models.Weapons
 {
     public sealed class FlameStaff : MagicWeapon
@@ -8,5 +10,9 @@ namespace Models.Weapons
 
         }
 
+        public override Damages.Damage GetDamage(Entity user)
+        {
+            return new FlameDamage((byte)(Power + user.Abilities.Magic));
+        }
     }
 }

@@ -1,21 +1,23 @@
 ﻿using System;
+using Models.Damages;
 
 namespace Models.Entities
 {
     public abstract class Entity
     {
-        public static readonly byte HealthLimit = 100;
-        public static readonly byte ManaLimit = 100;
+        public static readonly byte MaxHealth = 100;
+        public static readonly byte MaxMana = 100;
 
         public string Name { get; }
         public byte Health { get; private set; }
         public byte Mana { get; set; }
         public AbilityBoard Abilities { get; }
+        public Resistances Resistances { get; }
         public Inventory Inventory { get; }
 
         public bool IsAlive => Health > 0;
         public bool CanAttack => Inventory.CanUseActiveWeapon;
-        public byte Damage => Inventory.ActiveWeaponDamage;
+        public Damage Damage => Inventory.ActiveWeaponDamage;
 
         public delegate void DamagedHandler(Entity self, byte damage);
         public event DamagedHandler Damaged;
@@ -23,31 +25,34 @@ namespace Models.Entities
         public delegate void DiedHandler(Entity self);
         public event DiedHandler Died;
 
-        public Entity(string name, AbilityBoard abilites, Inventory inventory)
+        public Entity(string name, AbilityBoard abilites, Resistances resistances, Inventory inventory)
         {
             Name = name;
             Abilities = abilites;
+            Resistances = resistances;
             Inventory = inventory;
             Inventory.Owner = this;
-            Health = HealthLimit;
-            Mana = ManaLimit;
+            Health = MaxHealth;
+            Mana = MaxMana;
         }
 
-        public void ApplyDamage(byte damage)
+        public void ApplyDamage(Damages.Damage damage)
         {
             if (!IsAlive)
             {
                 throw new InvalidOperationException($"{this} is already dead");
             }
-            else if (damage >= Health)
+            var damagePower = Resistances.Apply(damage);
+            if (damagePower >= Health)
             {
                 Health = 0;
                 Died?.Invoke(this);
             }
             else
             {
-                Health -= damage;
-                Damaged?.Invoke(this, damage);
+                Health -= damagePower;
+                damage.ApplyResistance(Resistances);
+                Damaged?.Invoke(this, damagePower);
             }
         }
 
@@ -57,9 +62,9 @@ namespace Models.Entities
             {
                 throw new InvalidOperationException($"{this} is dead and cannot be healed");
             }
-            else if (Health + recovery > HealthLimit)
+            else if (Health + recovery > MaxHealth)
             {
-                Health = HealthLimit;
+                Health = MaxHealth;
             }
             else
             {

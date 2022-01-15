@@ -13,7 +13,7 @@ namespace Controllers
         public delegate void PlayerGotMoveHandler(Entity attacker, IEnumerable<Entity> enemies, IEnumerable<Entity> allias);
         public event PlayerGotMoveHandler PlayerGotMove;
 
-        public delegate void AttackedHandler(Entity attacker, Entity victim);
+        public delegate void AttackedHandler(Entity attacker, Entity target);
         public event AttackedHandler Attacked;
 
         public delegate void MissedHandler(Entity loser);
@@ -32,6 +32,7 @@ namespace Controllers
             _battle = battle;
             _isAuto = false;
             _battle.Won += OnChange;
+            _battle.Defeated += () => OnChange(null);
         }
 
         public BattleController(Battle battle, Controller next) : base(next)
@@ -61,10 +62,10 @@ namespace Controllers
             OnChange(controller);
         }
 
-        public void Attack(Entity victim)
+        public void Attack(Entity target)
         {
-            Attacked?.Invoke(Attacker, victim);
-            victim.ApplyDamage(Attacker.Damage);
+            Attacked?.Invoke(Attacker, target);
+            target.ApplyDamage(Attacker.Damage);
             Attacker.UseWeapon();
         }
 
@@ -78,7 +79,7 @@ namespace Controllers
         {
             if (Attacker.CanAttack)
             {
-                Attack(_battle.SuitableVictim);
+                Attack(_battle.RelevantTarget);
                 return;
             }
             var weapon = Attacker.Inventory.WeaponForAutoChange;

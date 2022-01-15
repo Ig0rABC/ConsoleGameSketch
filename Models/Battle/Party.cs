@@ -42,11 +42,11 @@ namespace Models.Battle
             return _members.Contains(entity);
         }
 
-        public Entity ChooseVictim(Entity attacker)
+        public Entity FindRelevantTarget(Entity attacker)
         {
             Entity victim = AliveMembers.First();
             foreach (var member in AliveMembers.Skip(1))
-                if (member.Health <= attacker.Damage && member.Health > victim.Health && member.Damage > victim.Damage)
+                if (member.Health > victim.Health)
                     victim = member;
             return victim;
         }

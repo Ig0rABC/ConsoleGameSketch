@@ -33,9 +33,9 @@ namespace Menus
             _controller.Changed -= OnChanged;
         }
 
-        private void OnAttacked(Entity attacker, Entity victim)
+        private void OnAttacked(Entity attacker, Entity target)
         {
-            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Inventory.ActiveWeapon)} the {victim.Name} with a {attacker.Inventory.ActiveWeapon.Name}.");
+            Console.WriteLine($"{attacker.Name} {GetAttackVerb(attacker.Inventory.ActiveWeapon)} the {target.Name} with a {attacker.Inventory.ActiveWeapon.Name}.");
         }
 
         private void OnChangedWeapon(Entity attacker, Weapon weapon)
@@ -61,7 +61,7 @@ namespace Menus
         {
             Console.WriteLine("Your party:");
             foreach (var ally in allies)
-                 Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.Damage} Dmg.)");
+                 Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.Damage.Power} Dmg.)");
             Console.WriteLine($"\n{attacker.Name}'s move..");
             IEnumerable<MenuOption> options;
             if (!attacker.CanAttack)

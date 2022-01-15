@@ -1,22 +1,24 @@
-﻿using Models.Entities;
+﻿using System;
+using Models.Entities;
+using Models.Damages;
 
 namespace Models.Weapons
 {
     public abstract class MeleeWeapon : Weapon
-
     {
+        public static readonly float MinDecreasePowerCondition = 0.375f;
+        public override byte Power => (byte)(base.Power * Math.Max(Condition, MinDecreasePowerCondition));
         public float Condition { get; private set; }
 
-        public MeleeWeapon(string name, byte damage) : base(name, damage)
+        public MeleeWeapon(string name, byte power) : base(name, power)
         {
             Condition = 1;
         }
 
-        public override byte GetDamage(AbilityBoard userAbilities)
+        public override Damage GetDamage(Entity user)
         {
-            var baseDamage = base.GetDamage(userAbilities);
-            var damageDecreaseFactor = Condition > 0.375f ? Condition : 0.375f;
-            return (byte)(baseDamage * damageDecreaseFactor + userAbilities.Strength);
+            var power = (byte)(Power + user.Abilities.Strength);
+            return new SteelDamage(power);
         }
 
         public override void Use(Entity user)
