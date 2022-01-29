@@ -16,8 +16,7 @@ namespace Models.Entities
         public Inventory Inventory { get; }
 
         public bool IsAlive => Health > 0;
-        public bool CanAttack => Inventory.CanUseActiveWeapon;
-        public Damage Damage => Inventory.ActiveWeaponDamage;
+        public bool CanAttack => Inventory.ActiveWeapon.CanUsed(this);
 
         public delegate void DamagedHandler(Entity self, byte damage);
         public event DamagedHandler Damaged;
@@ -31,9 +30,13 @@ namespace Models.Entities
             Abilities = abilites;
             Resistances = resistances;
             Inventory = inventory;
-            Inventory.Owner = this;
             Health = MaxHealth;
             Mana = MaxMana;
+        }
+
+        public Damage InstantiateDamage()
+        {
+            return Inventory.ActiveWeapon.InstantiateDamage(this);
         }
 
         public void ApplyDamage(Damages.Damage damage)

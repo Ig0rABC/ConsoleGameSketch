@@ -31,7 +31,7 @@ namespace Menus
             Console.WriteLine("What do you want?");
             var itemOptions = items.OfType<UsableItem>().Select(i => new UseItemOption(_controller, i));
             var weaponOptions = items.OfType<Weapon>().Select(w => new SetWeaponOption(_controller, w));
-            var options = itemOptions.Cast<MenuOption>().Concat(weaponOptions);
+            var options = new List<MenuOption>(itemOptions).Concat(weaponOptions);
             OnPlayerGotInput(options);
         }
     }

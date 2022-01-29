@@ -14,12 +14,13 @@ namespace ConsoleGameSketch
         {
             var client = new Client();
 
+            var musket = new Musket();
             var player = new Person(
                 "Igor",
                 new AbilityBoard(24, 14, 10),
                 new Resistances { Flame = 1, Steel = 1, FireArm = 1 },
                 new Inventory(new InventoryItem[] {
-                    new Musket(),
+                    musket,
                     new Gunpowder(),
                     new Gunpowder(),
                     new Gunpowder(),
@@ -28,7 +29,7 @@ namespace ConsoleGameSketch
                     new Gunpowder(),
                     new Naginata(),
                     new MedicialHerb()
-                }));
+                }) { ActiveWeapon =  musket });
 
             var monk = CreateWithWeapon<Monk, Naginata>();
             var allias = new Entity[] {
@@ -42,12 +43,13 @@ namespace ConsoleGameSketch
             var ogre = CreateWithWeapon<Ogre, WoodenClub>();
             Game.Guided.Add(ogre);
 
+            var shortBow = new ShortBow();
             var enemies = new Entity[]
             {
                 CreateWithWeapon<Goblin, Knife>(),
                 ogre,
                 CreateWithWeapon<Goblin, WoodenClub>(),
-                new Goblin(new Inventory(new InventoryItem[] { new ShortBow(), new Arrow(), new WoodenClub() }))
+                new Goblin(new Inventory(new InventoryItem[] { shortBow, new Arrow(), new WoodenClub() }) { ActiveWeapon = shortBow })
             };
             foreach (var e in enemies)
             {

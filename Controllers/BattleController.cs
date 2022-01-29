@@ -58,14 +58,15 @@ namespace Controllers
 
         public void OpenInventory()
         {
-            var controller = new InventoryController(Attacker.Inventory, this);
+            var controller = new InventoryController(Attacker.Inventory, Attacker, this);
             OnChange(controller);
         }
 
         public void Attack(Entity target)
         {
             Attacked?.Invoke(Attacker, target);
-            target.ApplyDamage(Attacker.Damage);
+            var damage = Attacker.InstantiateDamage();
+            target.ApplyDamage(damage);
             Attacker.UseWeapon();
         }
 
@@ -82,7 +83,7 @@ namespace Controllers
                 Attack(_battle.RelevantTarget);
                 return;
             }
-            var weapon = Attacker.Inventory.WeaponForAutoChange;
+            var weapon = Attacker.Inventory.GetWeaponForAutoChange(Attacker);
             if (weapon == null)
             {
                 Missed?.Invoke(Attacker);

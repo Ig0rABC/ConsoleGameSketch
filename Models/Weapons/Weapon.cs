@@ -12,7 +12,7 @@ namespace Models.Weapons
             Power = power;
         }
 
-        public abstract Damage GetDamage(Entity user);
+        public abstract Damage InstantiateDamage(Entity user);
 
         public abstract void Use(Entity user);
 

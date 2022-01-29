@@ -10,7 +10,7 @@ namespace Models.Weapons
 
         }
 
-        public override Damages.Damage GetDamage(Entity user)
+        public override Damage InstantiateDamage(Entity user)
         {
             return new FlameDamage((byte)(Power + user.Abilities.Magic));
         }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Models;
+using Models.Entities;
 using Models.Items;
 using Models.Weapons;
 
@@ -12,16 +14,20 @@ namespace Controllers
         public event ChoosingActionHandler ChoosingAction;
 
         private readonly Inventory _inventory;
+        private readonly Entity _owner;
 
-        public InventoryController(Inventory inventory, Controller next) : base(next)
+        public InventoryController(Inventory inventory, Entity owner, Controller next) : base(next)
         {
             _inventory = inventory;
+            _owner = owner;
         }
 
         public override void Update()
         {
-            var items = _inventory.GetAll<InventoryItem>();
-            ChoosingAction?.Invoke(items);
+            var items = _inventory.GetAll<UsableItem>();
+            var weapons = _inventory.GetWeaponsForChange(_owner);
+            var options = new List<InventoryItem>(items).Concat(weapons);
+            ChoosingAction?.Invoke(options);
         }
         
         public void Close()
@@ -37,7 +43,7 @@ namespace Controllers
 
         public void UseItem(UsableItem item)
         {
-            _inventory.UseItem(item);
+            _inventory.UseItem(item, _owner);
             OnChange();
         }
     }

@@ -10,7 +10,7 @@ namespace Models.Weapons
 
         }
 
-        public override Damage GetDamage(Entity user)
+        public override Damage InstantiateDamage(Entity user)
         {
             var ammo = user.Inventory.GetOne<T>();
             var weaponPower = (byte)(Power + user.Abilities.Accuracy);
@@ -22,7 +22,7 @@ namespace Models.Weapons
         }
 
         public override void Use(Entity user) {
-            user.Inventory.PutOut<T>();
+            user.Inventory.PutOutOne<T>();
             user.Abilities.ApplyAccuracy();
         }
 

@@ -61,7 +61,7 @@ namespace Menus
         {
             Console.WriteLine("Your party:");
             foreach (var ally in allies)
-                 Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.Damage.Power} Dmg.)");
+                 Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.InstantiateDamage().Power} Dmg.)");
             Console.WriteLine($"\n{attacker.Name}'s move..");
             IEnumerable<MenuOption> options;
             if (!attacker.CanAttack)

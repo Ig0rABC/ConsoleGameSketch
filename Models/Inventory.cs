@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Models.Entities;
 using Models.Items;
-using Models.Damages;
 using Models.Weapons;
 
 namespace Models
@@ -11,13 +10,8 @@ namespace Models
     public class Inventory {
 
         public static Inventory Empty => new(Array.Empty<InventoryItem>());
-        public Damage ActiveWeaponDamage => ActiveWeapon.GetDamage(_owner);
-        public bool CanUseActiveWeapon => ActiveWeapon.CanUsed(_owner);
-        public IEnumerable<Weapon> WeaponsForChange => GetAll<Weapon>().Where(IsWeaponRelevantForChange);
-        public Weapon WeaponForAutoChange => GetAll<Weapon>().First(IsWeaponRelevantForChange);
 
-        private Entity _owner;
-        private Weapon _activeWeapon;
+        public Weapon ActiveWeapon { get; set; }
         private List<InventoryItem> _items;
 
         public Inventory(IEnumerable<InventoryItem> items)
@@ -25,47 +19,32 @@ namespace Models
             _items = items.ToList();
         }
 
-        public Entity Owner {
-            set
-            {
-                if (_owner != null)
-                    throw new InvalidOperationException("Cannot set owner if he is already set");
-                _owner = value;
-            }
-        }
-
-        private bool IsWeaponRelevantForChange(Weapon weapon)
+        private bool IsWeaponRelevantForChange(Weapon weapon, Entity user)
         {
-            return !weapon.Equals(_activeWeapon) && weapon.CanUsed(_owner);
+            return !weapon.Equals(ActiveWeapon) && weapon.CanUsed(user);
         }
 
-        public Weapon ActiveWeapon
+        public IEnumerable<Weapon> GetWeaponsForChange(Entity user)
         {
-            get
-            {
-                if (_activeWeapon == null)
-                    _activeWeapon = WeaponForAutoChange;
-                return _activeWeapon;
-            }
-            set
-            {
-                if (!Has(value))
-                    throw new InvalidOperationException($"Specified weapon {value} must be in inventory for activate");
-                _activeWeapon = value;
-            }
+            return GetAll<Weapon>().Where(w => IsWeaponRelevantForChange(w, user));
         }
 
-        public void UseItem(UsableItem item)
+        public Weapon GetWeaponForAutoChange(Entity user)
+        {
+            return GetAll<Weapon>().First(w => IsWeaponRelevantForChange(w, user));
+        }
+
+        public void UseItem(UsableItem item, Entity target)
         {
             if (!Has(item))
                 throw new InvalidOperationException($"Specified item {item} must be in inventory for use");
-            item.Use(_owner);
+            item.Use(target);
             _items.Remove(item);
         }
 
-        public void UseItem<T>() where T : UsableItem
+        public void UseItem<T>(Entity target) where T : UsableItem
         {
-            GetOne<T>().Use(_owner);
+            GetOne<T>().Use(target);
         }
 
         public bool Has(InventoryItem item)
@@ -108,7 +87,7 @@ namespace Models
             return item;
         }
 
-        public IEnumerable<T> PutOut<T>(byte count = 1) where T : InventoryItem
+        public IEnumerable<T> PutOut<T>(byte count) where T : InventoryItem
         {
             var items = Get<T>(count);
             _items = _items.Except(items).ToList();

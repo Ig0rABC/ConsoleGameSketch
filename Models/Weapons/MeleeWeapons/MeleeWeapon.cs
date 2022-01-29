@@ -15,7 +15,7 @@ namespace Models.Weapons
             Condition = 1;
         }
 
-        public override Damage GetDamage(Entity user)
+        public override Damage InstantiateDamage(Entity user)
         {
             var power = (byte)(Power + user.Abilities.Strength);
             return new SteelDamage(power);
