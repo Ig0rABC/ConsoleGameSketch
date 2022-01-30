@@ -6,7 +6,7 @@ namespace Menus.Options
 {
     public sealed class AttackOption : MenuOption
     {
-        public AttackOption(BattleController controller, Entity victim) : base($"Attack {victim.Name} with a {victim.Inventory.ActiveWeapon.Name} ({victim.Health} HP, {victim.InstantiateDamage().Power} Dmg.)", new AttackCommand(controller, victim))
+        public AttackOption(BattleController controller, Entity victim) : base($"Attack {victim.Name} ({victim.Health} HP) with a {victim.Inventory.ActiveWeapon.Name} ({victim.Inventory.ActiveWeapon.Power} PWR)", new AttackCommand(controller, victim))
         {
 
         }

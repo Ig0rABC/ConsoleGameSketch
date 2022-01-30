@@ -10,7 +10,7 @@ namespace Controllers
     public sealed class InventoryController : Controller
     {
 
-        public delegate void ChoosingActionHandler(IEnumerable<InventoryItem> items);
+        public delegate void ChoosingActionHandler(IEnumerable<UsableItem> items, IEnumerable<Weapon> weapons);
         public event ChoosingActionHandler ChoosingAction;
 
         private readonly Inventory _inventory;
@@ -26,8 +26,7 @@ namespace Controllers
         {
             var items = _inventory.GetAll<UsableItem>();
             var weapons = _inventory.GetWeaponsForChange(_owner);
-            var options = new List<InventoryItem>(items).Concat(weapons);
-            ChoosingAction?.Invoke(options);
+            ChoosingAction?.Invoke(items, weapons);
         }
         
         public void Close()

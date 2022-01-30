@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Models.Entities;
 using Models.Weapons;
+using Models.Items;
 using Controllers;
 using Menus.Options;
 
@@ -61,27 +62,24 @@ namespace Menus
         {
             Console.WriteLine("Your party:");
             foreach (var ally in allies)
-                 Console.WriteLine($"{ally.Name} with a {ally.Inventory.ActiveWeapon.Name} ({ally.Health} HP, {ally.InstantiateDamage().Power} Dmg.)");
-            Console.WriteLine($"\n{attacker.Name}'s move..");
-            IEnumerable<MenuOption> options;
-            if (!attacker.CanAttack)
             {
-                Console.WriteLine("To attack you must change weapon!");
-                options = new MenuOption[] {
-                    new OpenInventoryOption(_controller),
-                    new AutoBattleOption(_controller)
-                };
+                Console.WriteLine($"{ally.Name} ({ally.Health} HP) with a {ally.Inventory.ActiveWeapon.Name} ({ally.Inventory.ActiveWeapon.Power} PWR)");
+            }
+            Console.WriteLine($"\n{attacker.Name}'s move..");
+            var options = enemies.Select(e => new AttackOption(_controller, e)).ToList<MenuOption>();
+            if (attacker.Inventory.Has<UsableItem>() || attacker.Inventory.GetWeaponsForChange(attacker).Any())
+            {
+                options.Add(new OpenInventoryOption(_controller));
+            }
+            if (attacker.CanAttack)
+            {
+                options.Add(new AutoAttackOption(_controller));
             }
             else
             {
-                options = enemies
-                    .Select(e => new AttackOption(_controller, e))
-                    .Concat(new MenuOption[] {
-                        new OpenInventoryOption(_controller),
-                        new AutoAttackOption(_controller),
-                        new AutoBattleOption(_controller)
-                    });
+                Console.WriteLine("To attack you must change weapon!");
             }
+            options.Add(new AutoBattleOption(_controller));
             OnPlayerGotInput(options);
         }
     }
