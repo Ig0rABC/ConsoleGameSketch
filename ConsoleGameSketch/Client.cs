@@ -39,14 +39,19 @@ namespace ConsoleGameSketch
             _isRunning = false;
         }
 
-        public void OnDamaged(Entity victim, byte damage)
+        public void OnDamaged(Entity victim, float damage)
         {
-            Console.WriteLine($"{victim.Name} recieved {damage} damage");
+            Console.WriteLine($"{victim.Name} recieved {damage * 100} damage");
         }
 
-        public void OnDied(Entity dead)
+        public void OnRecovered(Entity victim, float recovery)
         {
-            Console.WriteLine($"{dead.Name} is died");
+            Console.WriteLine($"{victim.Name} restored {recovery * 100} HP");
+        }
+
+        public void OnDied(Entity dead, float damage)
+        {
+            Console.WriteLine($"{dead.Name} recieved {damage * 100} damage and died");
         }
 
         private void OnPlayerGotInput(IEnumerable<MenuOption> options)

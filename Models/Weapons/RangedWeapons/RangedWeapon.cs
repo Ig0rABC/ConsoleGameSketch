@@ -5,7 +5,7 @@ namespace Models.Weapons
 {
     public abstract class RangedWeapon<T> : Weapon where T : Ammo
     {
-        public RangedWeapon(string name, byte power) : base(name, power)
+        public RangedWeapon(string name, float power) : base(name, power)
         {
 
         }
@@ -13,12 +13,13 @@ namespace Models.Weapons
         public override Damage InstantiateDamage(Entity user)
         {
             var ammo = user.Inventory.GetOne<T>();
-            var weaponPower = (byte)(Power + user.Abilities.Accuracy);
+            float weaponPower = Damage.CalculatePower(Power, user.Abilities.Accuracy);
             if (ammo == null)
+            {
+                // TODO: use specific damage type
                 return new SteelDamage(weaponPower);
-            var damage = ammo.GetDamage();
-            damage.Add(weaponPower);
-            return damage;
+            }
+            return ammo.InstantiateDamage(weaponPower);
         }
 
         public override void Use(Entity user) {

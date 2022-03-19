@@ -5,9 +5,9 @@ namespace Models.Weapons
 {
     public abstract class Weapon : InventoryItem
     {
-        public virtual byte Power { get; }
+        public virtual float Power { get; }
 
-        public Weapon(string name, byte power) : base(name)
+        public Weapon(string name, float power) : base(name)
         {
             Power = power;
         }

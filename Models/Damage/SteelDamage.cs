@@ -1,19 +1,19 @@
-﻿using Models.Entities;
+﻿using Models.Resistances;
 
 namespace Models.Damages
 {
     public sealed class SteelDamage : Damage
     {
-        public SteelDamage(byte power) : base(power)
+        public SteelDamage(float power) : base(power)
         {
         }
 
-        public override byte SelectResistance(Resistances resistances)
+        public override float SelectResistance(ResistanceBoard resistances)
         {
             return resistances.Steel;
         }
 
-        public override void ApplyResistance(Resistances resistances)
+        public override void ApplyResistance(ResistanceBoard resistances)
         {
             resistances.ApplySteel();
         }

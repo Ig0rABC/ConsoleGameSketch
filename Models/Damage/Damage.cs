@@ -1,23 +1,25 @@
-﻿using Models.Entities;
+﻿using System;
+using Models.Resistances;
 
 namespace Models.Damages
 {
     public abstract class Damage
     {
-        public byte Power { get; private set; }
+        public float Power { get; private set; }
 
-        public Damage(byte power)
+        public Damage(float power)
         {
+            if (power <= 0)
+                throw new ArgumentException("Damage power must be more than zero!", nameof(power));
             Power = power;
         }
-
-        public void Add(byte power)
+        public static float CalculatePower(float power, float ability)
         {
-            Power += power;
+            return power * ability * 2;
         }
 
-        public abstract byte SelectResistance(Resistances resistances);
+        public abstract float SelectResistance(ResistanceBoard resistances);
 
-        public abstract void ApplyResistance(Resistances resistances);
+        public abstract void ApplyResistance(ResistanceBoard resistances);
     }
 }

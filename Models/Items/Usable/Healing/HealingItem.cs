@@ -5,9 +5,9 @@ namespace Models.Items.Usable
     public abstract class HealingItem : UsableItem
     {
 
-        public byte Recovery { get; }
+        public float Recovery { get; }
 
-        public HealingItem(string name, byte recovery) : base(name)
+        public HealingItem(string name, float recovery) : base(name)
         {
             Recovery = recovery;
         }

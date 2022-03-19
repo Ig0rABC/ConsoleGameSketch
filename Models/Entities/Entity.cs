@@ -1,37 +1,42 @@
 ﻿using System;
 using Models.Damages;
+using Models.Resistances;
 
 namespace Models.Entities
 {
     public abstract class Entity
     {
-        public static readonly byte MaxHealth = 100;
-        public static readonly byte MaxMana = 100;
-
         public string Name { get; }
-        public byte Health { get; private set; }
-        public byte Mana { get; set; }
-        public AbilityBoard Abilities { get; }
-        public Resistances Resistances { get; }
-        public Inventory Inventory { get; }
+        public readonly StateBar Health;
+        public readonly StateBar Mana;
+        public readonly AbilityBoard Abilities;
+        public readonly TotalResistanceBoard TotalResistances;
+        public readonly EntityResistanceBoard InternalResistances;
+        public readonly Inventory Inventory;
 
-        public bool IsAlive => Health > 0;
         public bool CanAttack => Inventory.ActiveWeapon.CanUsed(this);
 
-        public delegate void DamagedHandler(Entity self, byte damage);
+        public delegate void DamagedHandler(Entity self, float damage);
         public event DamagedHandler Damaged;
 
-        public delegate void DiedHandler(Entity self);
+        public delegate void RecoveredHandler(Entity self, float damage);
+        public event DamagedHandler Recovered;
+
+        public delegate void DiedHandler(Entity self, float damage);
         public event DiedHandler Died;
 
-        public Entity(string name, AbilityBoard abilites, Resistances resistances, Inventory inventory)
+        public Entity(string name, AbilityBoard abilites, EntityResistanceBoard resistances, Inventory inventory)
         {
             Name = name;
             Abilities = abilites;
-            Resistances = resistances;
+            InternalResistances = resistances;
             Inventory = inventory;
-            Health = MaxHealth;
-            Mana = MaxMana;
+            TotalResistances = new TotalResistanceBoard(resistances, inventory);
+            Mana = new StateBar();
+            Health = new StateBar();
+            Health.Taken += value => Damaged?.Invoke(this, value);
+            Health.Restored += value => Recovered?.Invoke(this, value);
+            Health.Emptied += value => Died?.Invoke(this, value);
         }
 
         public Damage InstantiateDamage()
@@ -39,40 +44,24 @@ namespace Models.Entities
             return Inventory.ActiveWeapon.InstantiateDamage(this);
         }
 
-        public void ApplyDamage(Damages.Damage damage)
+        public void ApplyDamage(Damage damage)
         {
-            if (!IsAlive)
+            if (Health.IsEmpty())
             {
                 throw new InvalidOperationException($"{this} is already dead");
             }
-            var damagePower = Resistances.Apply(damage);
-            if (damagePower >= Health)
-            {
-                Health = 0;
-                Died?.Invoke(this);
-            }
-            else
-            {
-                Health -= damagePower;
-                damage.ApplyResistance(Resistances);
-                Damaged?.Invoke(this, damagePower);
-            }
+            var damagePower = TotalResistances.Apply(damage);
+            Health.Take(damagePower);
+            damage.ApplyResistance(TotalResistances);
         }
 
-        public void Heal(byte recovery)
+        public void Heal(float recovery)
         {
-            if (!IsAlive)
+            if (Health.IsEmpty())
             {
                 throw new InvalidOperationException($"{this} is dead and cannot be healed");
             }
-            else if (Health + recovery > MaxHealth)
-            {
-                Health = MaxHealth;
-            }
-            else
-            {
-                Health += recovery;
-            }
+            Health.Restore(recovery);
         }
 
         public void UseWeapon()

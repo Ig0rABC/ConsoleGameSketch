@@ -3,7 +3,7 @@ namespace Models.Items.Usable
 {
     public sealed class Salve : HealingItem
     {
-        public Salve() : base("Salve", 45)
+        public Salve() : base("Salve", 0.45f)
         {
 
         }

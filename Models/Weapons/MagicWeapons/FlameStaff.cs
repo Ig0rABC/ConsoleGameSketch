@@ -5,14 +5,15 @@ namespace Models.Weapons
 {
     public sealed class FlameStaff : MagicWeapon
     {
-        public FlameStaff() : base("Flame Staff", 18, 10)
+        public FlameStaff() : base("Flame Staff", 0.33f, 0.125f)
         {
 
         }
 
         public override Damage InstantiateDamage(Entity user)
         {
-            return new FlameDamage((byte)(Power + user.Abilities.Magic));
+            var damagePower = Damage.CalculatePower(Power, user.Abilities.Magic);
+            return new FlameDamage(damagePower);
         }
     }
 }

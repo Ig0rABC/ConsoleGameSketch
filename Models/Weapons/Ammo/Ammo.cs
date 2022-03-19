@@ -4,13 +4,13 @@ namespace Models.Weapons
 {
     public abstract class Ammo : InventoryItem
     {
-        public byte Power { get; }
+        public float Power { get; }
 
-        public Ammo(string name, byte power) : base(name)
+        public Ammo(string name, float power) : base(name)
         {
             Power = power;
         }
 
-        public abstract Damage GetDamage();
+        public abstract Damage InstantiateDamage(float weaponPower);
     }
 }

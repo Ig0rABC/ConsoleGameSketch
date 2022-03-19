@@ -5,13 +5,13 @@ namespace Models.Weapons
 {
     public abstract class MagicWeapon : Weapon
     {
-        public override byte Power => (byte)(base.Power + Level);
+        public override float Power => base.Power * Level / 10;
         public byte Level => (byte)Math.Floor(_level);
-        public byte RequiredMana { get; }
+        public float RequiredMana { get; }
 
         private float _level;
 
-        public MagicWeapon(string name, byte power, byte requiredMana) : base(name, power)
+        public MagicWeapon(string name, float power, float requiredMana) : base(name, power)
         {
             _level = 1;
             RequiredMana = requiredMana;
@@ -19,15 +19,15 @@ namespace Models.Weapons
 
         public override void Use(Entity user)
         {
-            user.Mana -= RequiredMana;
+            user.Mana.Take(RequiredMana);
             user.Abilities.ApplyMagic();
             if (Level < 10)
-                _level += 1 / 3;
+                _level += 0.33f;
         }
 
         public override bool CanUsed(Entity user)
         {
-            return user.Mana >= RequiredMana;
+            return user.Mana.Value >= RequiredMana;
         }
     }
 }

@@ -19,11 +19,6 @@ namespace Models
             _items = items.ToList();
         }
 
-        private bool IsWeaponRelevantForChange(Weapon weapon, Entity user)
-        {
-            return !weapon.Equals(ActiveWeapon) && weapon.CanUsed(user);
-        }
-
         public IEnumerable<Weapon> GetWeaponsForChange(Entity user)
         {
             return GetAll<Weapon>().Where(w => IsWeaponRelevantForChange(w, user));
@@ -99,6 +94,11 @@ namespace Models
             var items = GetAll<T>();
             _items = _items.Except(items).ToList();
             return items;
+        }
+
+        private bool IsWeaponRelevantForChange(Weapon weapon, Entity user)
+        {
+            return !weapon.Equals(ActiveWeapon) && weapon.CanUsed(user);
         }
     }
 }

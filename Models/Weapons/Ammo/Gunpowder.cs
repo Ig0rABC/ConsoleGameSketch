@@ -4,14 +4,14 @@ namespace Models.Weapons
 {
     public sealed class Gunpowder : Ammo
     {
-        public Gunpowder() : base("Gunpowder", 20)
+        public Gunpowder() : base("Gunpowder", 0.42f)
         {
 
         }
 
-        public override Damage GetDamage()
+        public override Damage InstantiateDamage(float weaponPower)
         {
-            return new FireArmDamage(Power);
+            return new FireArmDamage(Power + weaponPower);
         }
     }
 }

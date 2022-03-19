@@ -4,13 +4,13 @@ namespace Models.Weapons
 {
     public sealed class Bolt : Ammo
     {
-        public Bolt() : base("Crossbow Bolt", 9)
+        public Bolt() : base("Crossbow Bolt", 0.28f)
         {
 
         }
-        public override Damage GetDamage()
+        public override Damage InstantiateDamage(float weaponPower)
         {
-            return new SteelDamage(Power);
+            return new SteelDamage(Power + weaponPower);
         }
     }
 }

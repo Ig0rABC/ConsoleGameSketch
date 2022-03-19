@@ -4,14 +4,14 @@ namespace Models.Weapons
 {
     public sealed class Arrow : Ammo
     {
-        public Arrow() : base("Arrow", 5)
+        public Arrow() : base("Arrow", 0.19f)
         {
 
         }
 
-        public override Damage GetDamage()
+        public override Damage InstantiateDamage(float weaponPower)
         {
-            return new SteelDamage(Power);
+            return new SteelDamage(Power + weaponPower);
         }
     }
 }

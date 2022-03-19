@@ -1,14 +1,18 @@
-﻿
+﻿using System;
+
 namespace Models
 {
     public class AbilityBoard
     {
-        public byte Strength { get; private set; }
-        public byte Accuracy { get; private set; }
-        public byte Magic { get; private set; }
+        public float Strength { get; private set; }
+        public float Accuracy { get; private set; }
+        public float Magic { get; private set; }
         public static AbilityBoard Empty => new(0, 0, 0);
 
-        public AbilityBoard(byte strength, byte accuracy, byte magic)
+        private static readonly float MaxAbilityValue = 1;
+        private static readonly float IncreasePerApply = 0.00625f;
+
+        public AbilityBoard(float strength, float accuracy, float magic)
         {
             Strength = strength;
             Accuracy = accuracy;
@@ -17,17 +21,20 @@ namespace Models
 
         public void ApplyStrength()
         {
-            Strength++;
+            if (Strength < MaxAbilityValue)
+                Strength += IncreasePerApply;
         }
 
         public void ApplyAccuracy()
         {
-            Accuracy++;
+            if (Accuracy < MaxAbilityValue)
+                Strength += IncreasePerApply;
         }
 
         public void ApplyMagic()
         {
-            Magic++;
+            if (Magic < MaxAbilityValue)
+                Strength += IncreasePerApply;
         }
     }
 }

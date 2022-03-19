@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Controllers;
 using Models;
 using Models.Entities;
 using Models.Battle;
 using Models.Weapons;
+using Models.Resistances;
 using Models.Items.Usable;
 
 namespace ConsoleGameSketch
@@ -17,8 +19,8 @@ namespace ConsoleGameSketch
             var musket = new Musket();
             var player = new Person(
                 "Igor",
-                new AbilityBoard(24, 14, 10),
-                new Resistances { Flame = 1, Steel = 1, FireArm = 1 },
+                new AbilityBoard(0.3f, 0.3f, 0.1f),
+                new EntityResistanceBoard(0.1f, 0.1f, 0.1f),
                 new Inventory(new InventoryItem[] {
                     musket,
                     new Gunpowder(),
@@ -51,15 +53,11 @@ namespace ConsoleGameSketch
                 CreateWithWeapon<Goblin, WoodenClub>(),
                 new Goblin(new Inventory(new InventoryItem[] { shortBow, new Arrow(), new WoodenClub() }) { ActiveWeapon = shortBow })
             };
-            foreach (var e in enemies)
+            foreach (var e in enemies.Concat(allias))
             {
                 e.Damaged += client.OnDamaged;
                 e.Died += client.OnDied;
-            }
-            foreach (var a in allias)
-            {
-                a.Damaged += client.OnDamaged;
-                a.Died += client.OnDied;
+                e.Recovered += client.OnRecovered;
             }
 
             var battle = new Battle(new Party(allias), new Party(enemies));

@@ -11,7 +11,7 @@ namespace Models.Battle
         
         public delegate void DefeatedHandler();
         public event DefeatedHandler Defeated;
-        public IEnumerable<Entity> AliveMembers => _members.Where(m => m.IsAlive);
+        public IEnumerable<Entity> AliveMembers => _members.Where(m => !m.Health.IsEmpty());
         
         private readonly IEnumerable<Entity> _members;
         private byte _attackerIndex;
@@ -38,15 +38,16 @@ namespace Models.Battle
         public bool Has(Entity entity)
         {
             if (entity == null)
-                throw new ArgumentException();
+                throw new ArgumentNullException(nameof(entity));
             return _members.Contains(entity);
         }
 
         public Entity FindRelevantTarget(Entity attacker)
         {
+            // TODO: Find most relevant target for specified attacker
             Entity victim = AliveMembers.First();
             foreach (var member in AliveMembers.Skip(1))
-                if (member.Health > victim.Health)
+                if (member.Health.Value < victim.Health.Value)
                     victim = member;
             return victim;
         }
@@ -57,7 +58,7 @@ namespace Models.Battle
             IterationsCount++;
         }
 
-        private void OnDied(Entity dead)
+        private void OnDied(Entity dead, float damage)
         {
             if (!AliveMembers.Any())
                 Defeated?.Invoke();

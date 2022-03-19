@@ -6,6 +6,10 @@ namespace Menus.Options
 {
     public sealed class SetWeaponOption : MenuOption
     {
+        public SetWeaponOption(InventoryController controller, MeleeWeapon weapon) : base($"Take {weapon.Name} ({weapon.Condition.Percent} CND)", new SetWeaponCommand(controller, weapon))
+        {
+
+        }
         public SetWeaponOption(InventoryController controller, Weapon weapon) : base($"Take {weapon.Name}", new SetWeaponCommand(controller, weapon))
         {
 
