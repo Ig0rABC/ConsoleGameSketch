@@ -5,6 +5,6 @@ namespace Models
 {
     public static class Game
     {
-        public static readonly List<Entity> Guided = new() { };
+        public static readonly List<Entity> Controlled = new() { };
     }
 }

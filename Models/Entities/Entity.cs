@@ -34,9 +34,9 @@ namespace Models.Entities
             TotalResistances = new TotalResistanceBoard(resistances, inventory);
             Mana = new StateBar();
             Health = new StateBar();
-            Health.Taken += value => Damaged?.Invoke(this, value);
-            Health.Restored += value => Recovered?.Invoke(this, value);
-            Health.Emptied += value => Died?.Invoke(this, value);
+            Health.Taken += OnDamaged;
+            Health.Restored += OnRecovered;
+            Health.Emptied += OnDied;
         }
 
         public Damage InstantiateDamage()
@@ -69,6 +69,29 @@ namespace Models.Entities
             if (!CanAttack)
                 throw new InvalidOperationException();
             Inventory.ActiveWeapon.Use(this);
+        }
+
+        private void OnDamaged(float damage)
+        {
+            Damaged?.Invoke(this, damage);
+        }
+
+        private void OnRecovered(float recovery)
+        {
+            Recovered?.Invoke(this, recovery);
+        }
+
+        private void OnDied(float damage)
+        {
+            Died?.Invoke(this, damage);
+            Unsubscribe();
+        }
+
+        private void Unsubscribe()
+        {
+            Health.Taken -= OnDamaged;
+            Health.Restored -= OnRecovered;
+            Health.Emptied -= OnDied;
         }
     }
 }

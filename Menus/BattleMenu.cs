@@ -25,8 +25,6 @@ namespace Menus
 
         private void OnChanged(Controller next)
         {
-            if (next is InventoryController == false)
-                Console.WriteLine("You won!");
             _controller.PlayerGotMove -= OnPlayerGotMove;
             _controller.Attacked -= OnAttacked;
             _controller.Missed -= OnMissed;
@@ -63,23 +61,25 @@ namespace Menus
             Console.WriteLine("Your party:");
             foreach (var ally in allies)
             {
-                Console.WriteLine($"{ally.Name} ({ally.Health.Percent} HP) with a {ally.Inventory.ActiveWeapon.Name} ({ally.Inventory.ActiveWeapon.Power * 100} PWR)");
+                Console.WriteLine($"{ally.Name} ({ally.Health.Percent} HP) with a {ally.Inventory.ActiveWeapon.Name} ({ally.InstantiateDamage().Power * 100} PWR)");
             }
             Console.WriteLine($"\n{attacker.Name}'s move..");
-            var options = enemies.Select(e => new AttackOption(_controller, e)).ToList<MenuOption>();
+            var options = enemies.Select(e => new AttackOption(_controller, attacker, e)).ToList<MenuOption>();
             if (attacker.Inventory.Has<UsableItem>() || attacker.Inventory.GetWeaponsForChange(attacker).Any())
             {
-                options.Add(new OpenInventoryOption(_controller));
+                var option = new OpenInventoryOption(_controller, attacker);
+                options.Add(option);
             }
             if (attacker.CanAttack)
             {
-                options.Add(new AutoAttackOption(_controller));
+                var option = new AutoAttackOption(_controller, attacker);
+                options.Add(option);
             }
             else
             {
                 Console.WriteLine("To attack you must change weapon!");
             }
-            options.Add(new AutoBattleOption(_controller));
+            options.Add(new AutoBattleOption(_controller, attacker));
             OnPlayerGotInput(options);
         }
     }

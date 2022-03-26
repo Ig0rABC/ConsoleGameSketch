@@ -1,7 +1,7 @@
 ﻿
 namespace Controllers
 {
-    public abstract class Controller : IController
+    public abstract class Controller
     {
         public delegate void ChangedHandler(Controller controller);
         public event ChangedHandler Changed;

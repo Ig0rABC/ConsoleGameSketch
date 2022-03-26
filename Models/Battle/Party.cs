@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using Models.Entities;
 
@@ -12,56 +11,58 @@ namespace Models.Battle
         public delegate void DefeatedHandler();
         public event DefeatedHandler Defeated;
         public IEnumerable<Entity> AliveMembers => _members.Where(m => !m.Health.IsEmpty());
+
+        public Entity Current => AliveMembers.ElementAt(_index);
         
         private readonly IEnumerable<Entity> _members;
-        private byte _attackerIndex;
+        private byte _index;
 
         public Party(IEnumerable<Entity> members)
         {
             _members = members;
-            _attackerIndex = 0;
+            _index = 0;
             IterationsCount = 0;
             foreach (var member in _members)
                 member.Died += OnDied;
         }
 
-        public Entity Next()
+        public void MoveNext()
         {
-            var attacker = AliveMembers.ElementAt(_attackerIndex++);
-            if (_attackerIndex >= AliveMembers.Count())
+            if (++_index >= AliveMembers.Count())
             {
                 StartNewIteration();
             }
-            return attacker;
-        }
-
-        public bool Has(Entity entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-            return _members.Contains(entity);
         }
 
         public Entity FindRelevantTarget(Entity attacker)
         {
             // TODO: Find most relevant target for specified attacker
-            Entity victim = AliveMembers.First();
+            Entity target = AliveMembers.First();
             foreach (var member in AliveMembers.Skip(1))
-                if (member.Health.Value < victim.Health.Value)
-                    victim = member;
-            return victim;
+                if (member.Health.Value < target.Health.Value)
+                    target = member;
+            return target;
         }
 
         private void StartNewIteration()
         {
-            _attackerIndex = 0;
+            _index = 0;
             IterationsCount++;
         }
 
         private void OnDied(Entity dead, float damage)
         {
             if (!AliveMembers.Any())
+            {
                 Defeated?.Invoke();
+                Unsubscribe();
+            }
+        }
+
+        private void Unsubscribe()
+        {
+            foreach (var member in _members)
+                member.Died -= OnDied;
         }
     }
 }

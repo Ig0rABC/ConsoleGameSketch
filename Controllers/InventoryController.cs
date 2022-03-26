@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Models;
 using Models.Entities;
 using Models.Items;
@@ -9,7 +8,6 @@ namespace Controllers
 {
     public sealed class InventoryController : Controller
     {
-
         public delegate void ChoosingActionHandler(IEnumerable<UsableItem> items, IEnumerable<Weapon> weapons);
         public event ChoosingActionHandler ChoosingAction;
 
@@ -28,7 +26,7 @@ namespace Controllers
             var weapons = _inventory.GetWeaponsForChange(_owner);
             ChoosingAction?.Invoke(items, weapons);
         }
-        
+
         public void Close()
         {
             OnChange();

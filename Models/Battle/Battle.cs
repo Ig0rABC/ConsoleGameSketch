@@ -1,29 +1,17 @@
-﻿using System.Collections.Generic;
-using Models.Entities;
+﻿using Models.Entities;
 
 namespace Models.Battle
 {
     public class Battle
     {
-        public Entity Attacker { get; private set; }
-
         public delegate void EndedHandler();
         public event EndedHandler Defeated;
         public event EndedHandler Won;
 
-        public IEnumerable<Entity> Enemies => TargetParty.AliveMembers;
-        public IEnumerable<Entity> Allies
-        {
-            get
-            {
-                if (_playerParty.IterationsCount == 0)
-                    return _playerParty.AliveMembers;
-                else
-                    return (_playerParty.Has(Attacker) ? _playerParty : _npcParty).AliveMembers;
-            }
-        }
-
-        public Entity RelevantTarget => TargetParty.FindRelevantTarget(Attacker);
+        public Party TargetParty => MovingParty == _playerParty ? _npcParty : _playerParty;
+        public Party MovingParty => _playerParty.IterationsCount == _npcParty.IterationsCount
+            ? _playerParty
+            : _npcParty;
 
         private readonly Party _playerParty;
         private readonly Party _npcParty;
@@ -36,25 +24,32 @@ namespace Models.Battle
             _npcParty.Defeated += OnWon;
         }
 
-        public Entity Next()
+        public void MoveNext()
         {
-            Attacker = AttackerParty.Next();
-            return Attacker;
+            MovingParty.MoveNext();
         }
 
-        private Party TargetParty => _playerParty.Has(Attacker) ? _npcParty : _playerParty;
-        private Party AttackerParty => _playerParty.IterationsCount == _npcParty.IterationsCount
-            ? _playerParty
-            : _npcParty;
-
-        private void OnDefeated()
+        public Entity FindRelevantTarget(Entity attacker)
         {
-            Defeated?.Invoke();
+            return TargetParty.FindRelevantTarget(attacker);
         }
 
         private void OnWon()
         {
             Won?.Invoke();
+            Unsubscribe();
+        }
+
+        private void OnDefeated()
+        {
+            Defeated?.Invoke();
+            Unsubscribe();
+        }
+
+        private void Unsubscribe()
+        {
+            _playerParty.Defeated -= OnDefeated;
+            _npcParty.Defeated -= OnWon;
         }
     }
 }

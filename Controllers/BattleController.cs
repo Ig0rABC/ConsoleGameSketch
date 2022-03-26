@@ -9,7 +9,6 @@ namespace Controllers
 {
     public sealed class BattleController : Controller
     {
-
         public delegate void PlayerGotMoveHandler(Entity attacker, IEnumerable<Entity> enemies, IEnumerable<Entity> allias);
         public event PlayerGotMoveHandler PlayerGotMove;
 
@@ -22,75 +21,91 @@ namespace Controllers
         public delegate void ChangedWeaponHandler(Entity entity, Weapon weapon);
         public event ChangedWeaponHandler ChangedWeapon;
 
-        private Entity Attacker => _battle.Attacker;
-
         private readonly Battle _battle;
         private bool _isAuto;
 
-        public BattleController(Battle battle) : base()
+        public BattleController(Battle battle) : this(battle, null)
         {
-            _battle = battle;
-            _isAuto = false;
-            _battle.Won += OnChange;
-            _battle.Defeated += () => OnChange(null);
         }
 
         public BattleController(Battle battle, Controller next) : base(next)
         {
             _battle = battle;
             _isAuto = false;
-            _battle.Won += OnChange;
-            _battle.Defeated += () => OnChange(null);
+            _battle.Won += OnWon;
+            _battle.Defeated += OnDefeated;
         }
 
         public override void Update()
         {
-            _battle.Next();
-            if (Game.Guided.Contains(_battle.Attacker) && !_isAuto)
+            Entity attacker = _battle.MovingParty.Current;
+            if (Game.Controlled.Contains(attacker) && !_isAuto)
             {
-                PlayerGotMove?.Invoke(_battle.Attacker, _battle.Enemies, _battle.Allies);
+                var enemies = _battle.TargetParty.AliveMembers;
+                var allies = _battle.MovingParty.AliveMembers;
+                PlayerGotMove?.Invoke(attacker, enemies, allies);
             }
             else
             {
-                AutoMove();
+                AutoMove(attacker);
             }
+            _battle.MoveNext();
         }
 
-        public void OpenInventory()
+        public void OpenInventory(Entity owner)
         {
-            var controller = new InventoryController(Attacker.Inventory, Attacker, this);
+            var controller = new InventoryController(owner.Inventory, owner, this);
             OnChange(controller);
         }
 
-        public void Attack(Entity target)
+        public void Attack(Entity attacker, Entity target)
         {
-            Attacked?.Invoke(Attacker, target);
-            var damage = Attacker.InstantiateDamage();
+            Attacked?.Invoke(attacker, target);
+            var damage = attacker.InstantiateDamage();
             target.ApplyDamage(damage);
-            Attacker.UseWeapon();
+            attacker.UseWeapon();
         }
 
-        public void SwitchToAuto()
+        public void SwitchToAuto(Entity attacker)
         {
             _isAuto = true;
-            AutoMove();
+            AutoMove(attacker);
         }
 
-        public void AutoMove()
+        public void AutoMove(Entity attacker)
         {
-            if (Attacker.CanAttack)
+            if (attacker.CanAttack)
             {
-                Attack(_battle.RelevantTarget);
+                Entity target = _battle.FindRelevantTarget(attacker);
+                Attack(attacker, target);
                 return;
             }
-            var weapon = Attacker.Inventory.GetWeaponForAutoChange(Attacker);
+            var weapon = attacker.Inventory.GetWeaponForAutoChange(attacker);
             if (weapon == null)
             {
-                Missed?.Invoke(Attacker);
+                Missed?.Invoke(attacker);
                 return;
             }
-            ChangedWeapon?.Invoke(Attacker, weapon);
-            Attacker.Inventory.ActiveWeapon = weapon;
+            ChangedWeapon?.Invoke(attacker, weapon);
+            attacker.Inventory.ActiveWeapon = weapon;
+        }
+
+        private void OnWon()
+        {
+            OnChange();
+            Unsubscribe();
+        }
+
+        private void OnDefeated()
+        {
+            OnChange(null);
+            Unsubscribe();
+        }
+
+        private void Unsubscribe()
+        {
+            _battle.Won -= OnWon;
+            _battle.Defeated -= OnDefeated;
         }
     }
 }

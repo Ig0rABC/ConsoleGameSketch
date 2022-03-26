@@ -93,15 +93,16 @@ namespace ConsoleGameSketch
 
         private void OnControllerChanged(Controller controller)
         {
-            if (controller == null)
-            {
-                Stop();
-                return;
-            }
-            if (_controller != null)
+            if (_controller is null == false)
             {
                 _controller.Changed -= OnControllerChanged;
                 _menu.PlayerGotInput -= OnPlayerGotInput;
+            }
+            if (controller is null)
+            {
+                Console.WriteLine("Game over!");
+                Stop();
+                return;
             }
             _controller = controller;
             _menu = MenuFactory.Create(_controller);

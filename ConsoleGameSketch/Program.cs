@@ -39,11 +39,11 @@ namespace ConsoleGameSketch
                 monk,
             };
 
-            Game.Guided.Add(player);
-            Game.Guided.Add(monk);
+            Game.Controlled.Add(player);
+            Game.Controlled.Add(monk);
 
             var ogre = CreateWithWeapon<Ogre, WoodenClub>();
-            Game.Guided.Add(ogre);
+            Game.Controlled.Add(ogre);
 
             var shortBow = new ShortBow();
             var enemies = new Entity[]
