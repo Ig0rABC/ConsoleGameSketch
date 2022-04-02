@@ -11,7 +11,6 @@ namespace Models.Entities
         public readonly StateBar Mana;
         public readonly AbilityBoard Abilities;
         public readonly TotalResistanceBoard TotalResistances;
-        public readonly EntityResistanceBoard InternalResistances;
         public readonly Inventory Inventory;
 
         public bool CanAttack => Inventory.ActiveWeapon.CanUsed(this);
@@ -29,7 +28,6 @@ namespace Models.Entities
         {
             Name = name;
             Abilities = abilites;
-            InternalResistances = resistances;
             Inventory = inventory;
             TotalResistances = new TotalResistanceBoard(resistances, inventory);
             Mana = new StateBar();

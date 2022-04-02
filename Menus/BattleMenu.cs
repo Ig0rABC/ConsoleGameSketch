@@ -61,7 +61,7 @@ namespace Menus
             Console.WriteLine("Your party:");
             foreach (var ally in allies)
             {
-                Console.WriteLine($"{ally.Name} ({ally.Health.Percent} HP) with a {ally.Inventory.ActiveWeapon.Name} ({ally.InstantiateDamage().Power * 100} PWR)");
+                Console.WriteLine(View.GetEntityLabel(ally));
             }
             Console.WriteLine($"\n{attacker.Name}'s move..");
             var options = enemies.Select(e => new AttackOption(_controller, attacker, e)).ToList<MenuOption>();

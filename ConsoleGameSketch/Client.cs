@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Controllers;
+﻿using System.Collections.Generic;
 using Models.Entities;
+using Controllers;
 using Menus;
 using Menus.Options;
 
@@ -29,7 +27,7 @@ namespace ConsoleGameSketch
             _isRunning = true;
             while (_isRunning)
             {
-                Console.WriteLine();
+                View.Separate();
                 _controller.Update();
             }
         }
@@ -39,56 +37,10 @@ namespace ConsoleGameSketch
             _isRunning = false;
         }
 
-        public void OnDamaged(Entity victim, float damage)
-        {
-            Console.WriteLine($"{victim.Name} recieved {damage * 100} damage");
-        }
-
-        public void OnRecovered(Entity victim, float recovery)
-        {
-            Console.WriteLine($"{victim.Name} restored {recovery * 100} HP");
-        }
-
-        public void OnDied(Entity dead, float damage)
-        {
-            Console.WriteLine($"{dead.Name} recieved {damage * 100} damage and died");
-        }
-
         private void OnPlayerGotInput(IEnumerable<MenuOption> options)
         {
-            byte index = 1;
-            foreach (var option in options)
-            {
-                Console.WriteLine($"{index++}. {option.Label}");
-            }
-            var optionsCount = (byte)options.Count();
-            var optionNumber = InputOptionNumber(optionsCount);
-            options.ElementAt(optionNumber - 1).Execute();
-        }
-
-        private byte InputOptionNumber(byte optionCount)
-        {
-            Console.Write("Input an option number:>");
-            var input = Console.ReadLine();
-            try
-            {
-                var optionNumber = byte.Parse(input);
-                if (optionNumber > optionCount)
-                    throw new OverflowException();
-                return optionNumber;
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Input a number!");
-            }
-            catch (OverflowException)
-            {
-                if (input.StartsWith('-'))
-                    Console.WriteLine("Input a positive number!");
-                else
-                    Console.WriteLine($"In all {optionCount} options!");
-            }
-            return InputOptionNumber(optionCount);
+            var option = View.ChooseOption(options);
+            option.Execute();
         }
 
         private void OnControllerChanged(Controller controller)
@@ -100,7 +52,7 @@ namespace ConsoleGameSketch
             }
             if (controller is null)
             {
-                Console.WriteLine("Game over!");
+                View.GameOver();
                 Stop();
                 return;
             }
@@ -108,6 +60,24 @@ namespace ConsoleGameSketch
             _menu = MenuFactory.Create(_controller);
             _controller.Changed += OnControllerChanged;
             _menu.PlayerGotInput += OnPlayerGotInput;
+        }
+
+        public void OnDamaged(Entity victim, float damage)
+        {
+            View.OnDamaged(victim, damage);
+        }
+
+        public void OnRecovered(Entity entity, float recovery)
+        {
+            View.OnRecovered(entity, recovery);
+        }
+
+        public void OnDied(Entity dead, float damage)
+        {
+            dead.Damaged -= OnDamaged;
+            dead.Recovered -= OnRecovered;
+            dead.Died -= OnDied;
+            View.OnDied(dead, damage);
         }
     }
 }

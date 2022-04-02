@@ -5,6 +5,7 @@ using Models;
 using Models.Entities;
 using Models.Battle;
 using Models.Weapons;
+using Models.Outfits;
 using Models.Resistances;
 using Models.Items.Usable;
 
@@ -17,12 +18,14 @@ namespace ConsoleGameSketch
             var client = new Client();
 
             var musket = new Musket();
+            var leather = new LeatherJacket();
             var player = new Person(
                 "Igor",
                 new AbilityBoard(0.3f, 0.3f, 0.1f),
                 new EntityResistanceBoard(0.1f, 0.1f, 0.1f),
                 new Inventory(new InventoryItem[] {
                     musket,
+                    leather,
                     new Gunpowder(),
                     new Gunpowder(),
                     new Gunpowder(),
@@ -31,9 +34,9 @@ namespace ConsoleGameSketch
                     new Gunpowder(),
                     new Naginata(),
                     new MedicialHerb()
-                }) { ActiveWeapon =  musket });
+                }) { ActiveWeapon =  musket, Outfit = leather });
 
-            var monk = CreateWithWeapon<Monk, Naginata>();
+            var monk = CreateWitAmmunition<Monk, Naginata, RagOutfit>();
             var allias = new Entity[] {
                 player,
                 monk,
@@ -48,9 +51,9 @@ namespace ConsoleGameSketch
             var shortBow = new ShortBow();
             var enemies = new Entity[]
             {
-                CreateWithWeapon<Goblin, Knife>(),
+                CreateWitAmmunition<Goblin, Knife, RustyArmor>(),
                 ogre,
-                CreateWithWeapon<Goblin, WoodenClub>(),
+                CreateWitAmmunition<Goblin, WoodenClub, RagOutfit>(),
                 new Goblin(new Inventory(new InventoryItem[] { shortBow, new Arrow(), new WoodenClub() }) { ActiveWeapon = shortBow })
             };
             foreach (var e in enemies.Concat(allias))
@@ -73,6 +76,18 @@ namespace ConsoleGameSketch
             var inventory = new Inventory(new InventoryItem[] { weapon })
             {
                 ActiveWeapon = weapon
+            };
+            return (E)Activator.CreateInstance(typeof(E), new object[] { inventory });
+        }
+
+        private static Entity CreateWitAmmunition<E, W, O>() where E : Entity where W : Weapon where O : Outfit, new()
+        {
+            var weapon = (W)Activator.CreateInstance(typeof(W));
+            var outfit = new O();
+            var inventory = new Inventory(new InventoryItem[] { weapon })
+            {
+                ActiveWeapon = weapon,
+                Outfit = outfit
             };
             return (E)Activator.CreateInstance(typeof(E), new object[] { inventory });
         }

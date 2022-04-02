@@ -4,14 +4,16 @@ using System.Linq;
 using Models.Entities;
 using Models.Items;
 using Models.Weapons;
+using Models.Outfits;
 
 namespace Models
 {
     public class Inventory {
-
         public static Inventory Empty => new(Array.Empty<InventoryItem>());
 
         public Weapon ActiveWeapon { get; set; }
+        public Outfit Outfit { get; set; }
+
         private List<InventoryItem> _items;
 
         public Inventory(IEnumerable<InventoryItem> items)

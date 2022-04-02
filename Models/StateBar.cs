@@ -4,7 +4,6 @@ namespace Models
     public class StateBar
     {
         public float Value => _value;
-        public byte Percent => (byte)(Value * 100);
 
         public delegate void TakenHandler(float value);
         public event TakenHandler Taken;
