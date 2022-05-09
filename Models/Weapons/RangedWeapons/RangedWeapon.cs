@@ -1,5 +1,8 @@
-﻿using Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+using Models.Entities;
 using Models.Damages;
+using Models.Effects;
 
 namespace Models.Weapons
 {
@@ -16,10 +19,15 @@ namespace Models.Weapons
             float weaponPower = Damage.CalculatePower(Power, user.Abilities.Accuracy);
             if (ammo == null)
             {
-                // TODO: use specific damage type
                 return new SteelDamage(weaponPower);
             }
             return ammo.InstantiateDamage(weaponPower);
+        }
+
+        public override IEnumerable<Effect> InstantiateEffects()
+        {
+            var ammo = (Ammo)Activator.CreateInstance(typeof(T));
+            return ammo.InstantiateEffects();
         }
 
         public override void Use(Entity user) {

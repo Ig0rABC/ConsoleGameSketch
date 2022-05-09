@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Models.Entities;
 using Models.Damages;
+using Models.Effects;
 
 namespace Models.Weapons
 {
@@ -18,6 +20,11 @@ namespace Models.Weapons
         {
             var power = Damage.CalculatePower(Power, user.Abilities.Strength);
             return new SteelDamage(power);
+        }
+
+        public override IEnumerable<Effect> InstantiateEffects()
+        {
+            return Array.Empty<Effect>();
         }
 
         public override void Use(Entity user)

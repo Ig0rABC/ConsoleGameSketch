@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Models.Damages;
 using Models.Effects;
 
 namespace Models.Weapons
 {
-    public sealed class Gunpowder : Ammo
+    public sealed class FireArrow : Ammo
     {
-        public Gunpowder() : base("Gunpowder", 0.42f)
+        public FireArrow() : base("Fire arrow", 0.19f)
         {
 
         }
 
         public override Damage InstantiateDamage(float weaponPower)
         {
-            return new FireArmDamage(Power + weaponPower);
+            return new SteelDamage(Power + weaponPower);
         }
 
         public override IEnumerable<Effect> InstantiateEffects()
         {
-            return Array.Empty<Effect>();
+            return new [] { new Burning(5, 0.1f) };
         }
     }
 }

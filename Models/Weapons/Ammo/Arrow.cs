@@ -1,4 +1,7 @@
-﻿using Models.Damages;
+﻿using System;
+using System.Collections.Generic;
+using Models.Damages;
+using Models.Effects;
 
 namespace Models.Weapons
 {
@@ -12,6 +15,11 @@ namespace Models.Weapons
         public override Damage InstantiateDamage(float weaponPower)
         {
             return new SteelDamage(Power + weaponPower);
+        }
+
+        public override IEnumerable<Effect> InstantiateEffects()
+        {
+            return Array.Empty<Effect>();
         }
     }
 }

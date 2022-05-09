@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Models;
 using Models.Entities;
-using Models.Damages;
+using Models.Effects;
 using Models.Weapons;
 using Models.Outfits;
 using Menus.Options;
@@ -59,7 +59,7 @@ namespace Menus
 
         public static string GetWeaponLabel(Weapon weapon, Entity owner)
         {
-            return GetWeaponLabel(weapon, owner.InstantiateDamage().Power);
+            return GetWeaponLabel(weapon, owner.Inventory.ActiveWeapon.InstantiateDamage(owner).Power);
         }
 
         public static string GetWeaponLabel(Weapon weapon)
@@ -90,6 +90,23 @@ namespace Menus
         public static void OnDied(Entity dead, float damage)
         {
             Console.WriteLine($"{dead.Name} recieved {damage * 100} damage and died");
+        }
+
+        public static void OnAffected(Entity target, Effect effect)
+        {
+            switch (effect)
+            {
+                case Burning:
+                {
+                    Console.WriteLine($"{target.Name} burning..");
+                    break;
+                }
+                case Healing:
+                {
+                    Console.WriteLine($"{target.Name} Healing..");
+                    break;
+                }
+            }
         }
 
         private static string WrapDetails(string info)

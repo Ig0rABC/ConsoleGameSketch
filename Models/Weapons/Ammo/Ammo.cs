@@ -1,4 +1,6 @@
-﻿using Models.Damages;
+﻿using System.Collections.Generic;
+using Models.Damages;
+using Models.Effects;
 
 namespace Models.Weapons
 {
@@ -12,5 +14,6 @@ namespace Models.Weapons
         }
 
         public abstract Damage InstantiateDamage(float weaponPower);
+        public abstract IEnumerable<Effect> InstantiateEffects();
     }
 }

@@ -21,9 +21,10 @@ namespace ConsoleGameSketch
             var leather = new LeatherJacket();
             var player = new Person(
                 "Igor",
-                new AbilityBoard(0.3f, 0.3f, 0.1f),
+                new AbilityBoard(0.3f, 0.3f, 0.5f),
                 new EntityResistanceBoard(0.1f, 0.1f, 0.1f),
                 new Inventory(new InventoryItem[] {
+                    new FlameStaff(),
                     musket,
                     leather,
                     new Gunpowder(),
@@ -61,6 +62,7 @@ namespace ConsoleGameSketch
                 e.Damaged += client.OnDamaged;
                 e.Died += client.OnDied;
                 e.Recovered += client.OnRecovered;
+                e.Effector.Added += client.OnAffected;
             }
 
             var battle = new Battle(new Party(allias), new Party(enemies));

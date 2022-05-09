@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Models.Entities;
+using Models.Effects;
 using Controllers;
 using Menus;
 using Menus.Options;
@@ -78,6 +79,11 @@ namespace ConsoleGameSketch
             dead.Recovered -= OnRecovered;
             dead.Died -= OnDied;
             View.OnDied(dead, damage);
+        }
+
+        public void OnAffected(Entity target, Effect effect)
+        {
+            View.OnAffected(target, effect);
         }
     }
 }

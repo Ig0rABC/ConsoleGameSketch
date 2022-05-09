@@ -5,7 +5,7 @@ namespace Models.Weapons
 {
     public abstract class MagicWeapon : Weapon
     {
-        public override float Power => base.Power * Level / 10;
+        public override float Power => base.Power * Level / 3;
         public byte Level => (byte)Math.Floor(_level);
         public float RequiredMana { get; }
 
