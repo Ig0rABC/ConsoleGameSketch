@@ -1,4 +1,5 @@
-﻿using Models.Resistances;
+﻿using Models.Damages;
+using Models.Resistances;
 
 namespace Models.Outfits
 {
@@ -11,7 +12,11 @@ namespace Models.Outfits
         {
             Resistances = resistances;
             Condition = new StateBar();
-            Resistances.SetOutfitCondition(Condition);
+        }
+
+        public void ApplyDamage(Damage damage)
+        {
+            damage.Apply(Resistances, Condition);
         }
     }
 }

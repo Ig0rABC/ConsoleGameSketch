@@ -4,20 +4,7 @@ namespace Models.Resistances
 {
     public class OutfitResistanceBoard : ResistanceBoard
     {
-        public override float Flame => _flame * Math.Max(_outfitCondition.Value, 0.125f);
-        public override float Steel => _steel * Math.Max(_outfitCondition.Value, 0.125f);
-        public override float FireArm => _fireArm * Math.Max(_outfitCondition.Value, 0.125f);
-        public static OutfitResistanceBoard Empty
-        {
-            get
-            {
-                var r = new OutfitResistanceBoard(0, 0, 0);
-                r.SetOutfitCondition(new StateBar());
-                return r;
-            }
-        }
-
-        private StateBar _outfitCondition;
+        public static OutfitResistanceBoard Empty => new (0, 0, 0);
 
         private readonly float _flame;
         private readonly float _steel;
@@ -30,35 +17,31 @@ namespace Models.Resistances
             _fireArm = fireArm;
         }
 
-        public void SetOutfitCondition(StateBar outfitCondition)
+        public override float GetFlame(StateBar outfitCondition)
         {
-            if (_outfitCondition is null == false)
-                throw new InvalidOperationException("Outfit condition already set.");
-            _outfitCondition = outfitCondition;
+            return _flame * Math.Max(outfitCondition.Value, 0.125f);
+        }
+
+        public override float GetSteel(StateBar outfitCondition)
+        {
+            return _steel * Math.Max(outfitCondition.Value, 0.125f);
+        }
+
+        public override float GetFireArm(StateBar outfitCondition)
+        {
+            return _fireArm * Math.Max(outfitCondition.Value, 0.125f);
         }
 
         public override void ApplyFlame()
         {
-            DecreaseOutfitCondition(_flame);
         }
 
         public override void ApplySteel()
         {
-            DecreaseOutfitCondition(_steel);
         }
 
         public override void ApplyFireArm()
         {
-            DecreaseOutfitCondition(_fireArm);
-        }
-
-        private void DecreaseOutfitCondition(float resistance)
-        {
-            if (!_outfitCondition.IsEmpty())
-            {
-                // TODO: Calculate decrease value by specific resistance
-                _outfitCondition.Take(0.03125f);
-            }
         }
     }
 }

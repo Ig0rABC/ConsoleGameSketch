@@ -3,10 +3,7 @@ namespace Models.Resistances
 {
     public class EntityResistanceBoard : ResistanceBoard
     {
-        public override float Flame => _flame;
-        public override float Steel => _steel;
-        public override float FireArm => _fireArm;
-        public static EntityResistanceBoard Empty => new(0, 0, 0);
+        public static EntityResistanceBoard Empty => new (0, 0, 0);
 
         private float _flame;
         private float _steel;
@@ -19,6 +16,19 @@ namespace Models.Resistances
             _flame = flame;
             _steel = steel;
             _fireArm = fireArm;
+        }
+
+        public override float GetFlame(StateBar health)
+        {
+            return _flame;
+        }
+        public override float GetSteel(StateBar health)
+        {
+            return _steel;
+        }
+        public override float GetFireArm(StateBar health)
+        {
+            return _fireArm;
         }
 
         public override void ApplyFlame()

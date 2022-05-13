@@ -11,7 +11,7 @@ namespace Models.Entities
         public readonly StateBar Health;
         public readonly StateBar Mana;
         public readonly AbilityBoard Abilities;
-        public readonly TotalResistanceBoard TotalResistances;
+        public readonly EntityResistanceBoard Resistances;
         public readonly Inventory Inventory;
         public readonly Effector Effector;
 
@@ -30,7 +30,7 @@ namespace Models.Entities
         {
             Name = name;
             Abilities = abilites;
-            TotalResistances = new(resistances, inventory);
+            Resistances = resistances;
             Inventory = inventory;
             Effector = new(this);
             Mana = new();
@@ -47,9 +47,8 @@ namespace Models.Entities
         {
             if (Health.IsEmpty())
                 throw new InvalidOperationException($"{this} is already dead");
-            var damagePower = TotalResistances.Apply(damage);
-            Health.Take(damagePower);
-            damage.ApplyResistance(TotalResistances);
+            Inventory.Outfit?.ApplyDamage(damage);
+            damage.Apply(Resistances, Health);
         }
 
         public void Heal(float recovery)

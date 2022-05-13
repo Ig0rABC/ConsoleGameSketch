@@ -8,12 +8,12 @@ namespace Models.Damages
         {
         }
 
-        public override float SelectResistance(ResistanceBoard resistances)
+        public override float SelectResistance(ResistanceBoard resistances, StateBar health)
         {
-            return resistances.FireArm;
+            return resistances.GetFireArm(health);
         }
 
-        public override void ApplyResistance(ResistanceBoard resistances)
+        protected override void ApplyResistance(ResistanceBoard resistances)
         {
             resistances.ApplyFireArm();
         }
