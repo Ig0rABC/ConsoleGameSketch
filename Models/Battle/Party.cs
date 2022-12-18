@@ -4,7 +4,7 @@ using Models.Entities;
 
 namespace Models.Battle
 {
-    public class Party
+    public class Party : IUpdatable
     {
         public byte IterationsCount { get; private set; }
         
@@ -26,22 +26,16 @@ namespace Models.Battle
                 member.Died += OnDied;
         }
 
+        public void Update()
+        {
+            foreach (var entity in _members)
+                entity.Update();
+        }
+
         public void MoveNext()
         {
             if (++_index >= AliveMembers.Count())
-            {
                 StartNewIteration();
-            }
-        }
-
-        public Entity FindRelevantTarget(Entity attacker)
-        {
-            // TODO: Find most relevant target for specified attacker
-            Entity target = AliveMembers.First();
-            foreach (var member in AliveMembers.Skip(1))
-                if (member.Health.Value < target.Health.Value)
-                    target = member;
-            return target;
         }
 
         private void StartNewIteration()

@@ -4,16 +4,20 @@ using Models.Damages;
 
 namespace Models.Effects
 {
-    public class DamageEffect<T> : Effect where T : Damage
+    public class DamageEffect<T> : TempEffect where T : Damage
     {
-        public DamageEffect(byte count, float power) : base(count, power)
+        public readonly float Power;
+
+        public DamageEffect(byte duration, float power, byte delay = 1) : base(duration, delay)
         {
+            Power = power;
         }
 
-        protected override void ApplySelf(Entity target, float power)
+        protected override void OnTick(Entity target)
         {
-            var damage = (Damage)Activator.CreateInstance(typeof(T), power);
-            target.ApplyDamage(damage);
+            var damage = (Damage)Activator.CreateInstance(typeof(T), Power);
+            if (!target.Health.IsEmpty())
+                target.Apply(damage);
         }
     }
 }

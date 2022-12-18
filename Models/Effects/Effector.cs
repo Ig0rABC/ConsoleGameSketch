@@ -13,44 +13,52 @@ namespace Models.Effects
         public delegate void AppliedHandler(Entity target, Effect effect);
         public event AppliedHandler Applied;
 
-        private readonly Entity _owner;
         private readonly List<Effect> _effects;
 
-        public Effector(Entity owner)
+        public Effector(List<Effect> effects)
         {
-            _owner = owner;
-            _effects = new();
+            _effects = effects;
         }
 
-        public void ApplyEffects(Entity target)
+        public void Update(Entity target)
         {
-            foreach (var effect in _effects.ToArray())
+            foreach (var effect in _effects.OrderByDescending(e => e.Priority))
             {
-                if (effect.IsOver)
-                {
-                    _effects.Remove(effect);
-                }
-                else
-                {
-                    effect.Apply(target);
-                    Applied?.Invoke(_owner, effect);
-                }
+                effect.Update();
+                Applied?.Invoke(target, effect);
             }
         }
 
-        public void Add(Effect effect)
+        public void Add(Entity target, Effect effect)
         {
             var stocked = FindSimilar(effect);
-            if (stocked is null == false && stocked.Power < effect.Power)
+            if (stocked is null == false)
+            {
+                if (stocked.Priority > effect.Priority)
+                {
+                    return;
+                }
                 Override(stocked, effect);
+            }
             else
+            {
                 _effects.Add(effect);
-            Added?.Invoke(_owner, effect);
+            }
+            effect.Apply(target);
+            effect.Expired += OnExpired;
+            Added?.Invoke(target, effect);
         }
 
-        public void Clear<T>()
+        public void Clear<T>() where T : Effect
         {
-            _effects.RemoveAll(effect => effect is T);
+            foreach (var effect in _effects.Where(e => e is T))
+                effect.Dispose();
+        }
+
+        private void OnExpired(Effect effect)
+        {
+            _effects.Remove(effect);
+            effect.Expired -= OnExpired;
         }
 
         private Effect FindSimilar(Effect effect)

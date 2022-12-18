@@ -1,8 +1,9 @@
-﻿using Models.Entities;
+﻿using System.Linq;
+using Models.Entities;
 
 namespace Models.Battle
 {
-    public class Battle
+    public class Battle : IUpdatable
     {
         public delegate void EndedHandler();
         public event EndedHandler Defeated;
@@ -24,6 +25,12 @@ namespace Models.Battle
             _npcParty.Defeated += OnWon;
         }
 
+        public void Update()
+        {
+            TargetParty.Update();
+            MovingParty.Update();
+        }
+
         public void MoveNext()
         {
             MovingParty.MoveNext();
@@ -31,7 +38,13 @@ namespace Models.Battle
 
         public Entity FindRelevantTarget(Entity attacker)
         {
-            return TargetParty.FindRelevantTarget(attacker);
+            // TODO: Find most relevant target for specified attacker
+            var enemies = TargetParty.AliveMembers;
+            Entity target = enemies.First();
+            foreach (var member in enemies.Skip(1))
+                if (member.Health.Value < target.Health.Value)
+                    target = member;
+            return target;
         }
 
         private void OnWon()

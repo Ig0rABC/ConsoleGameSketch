@@ -61,7 +61,7 @@ namespace ConsoleGameSketch
             {
                 e.Damaged += client.OnDamaged;
                 e.Died += client.OnDied;
-                e.Recovered += client.OnRecovered;
+                e.Healed += client.OnHealed;
                 e.Effector.Added += client.OnAffected;
             }
 

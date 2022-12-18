@@ -39,7 +39,6 @@ namespace Controllers
         public override void Update()
         {
             Entity attacker = _battle.MovingParty.Current;
-            attacker.Update();
             if (Game.Controlled.Contains(attacker) && !_isAuto)
             {
                 var enemies = _battle.TargetParty.AliveMembers;
@@ -50,6 +49,7 @@ namespace Controllers
             {
                 AutoMove(attacker);
             }
+            _battle.Update();
             _battle.MoveNext();
         }
 
@@ -65,8 +65,8 @@ namespace Controllers
             var damage = attacker.Inventory.ActiveWeapon.InstantiateDamage(attacker);
             var effects = attacker.Inventory.ActiveWeapon.InstantiateEffects();
             foreach (var effect in effects)
-                target.Effector.Add(effect);
-            target.ApplyDamage(damage);
+                target.Apply(effect);
+            target.Apply(damage);
             attacker.UseWeapon();
         }
 

@@ -1,32 +1,37 @@
-﻿using System;
-using Models.Entities;
+﻿using Models.Entities;
 
 namespace Models.Effects
 {
-    public abstract class Effect
+    public abstract class Effect : IUpdatable
     {
-        public byte Duration { get; private set; }
-        public float Power => _initialPower / (_initialDuration - Duration + 1);
-        public bool IsOver => Duration < 1;
+        public delegate void ExpiredHandler(Effect self);
+        public event ExpiredHandler Expired;
 
-        private readonly byte _initialDuration;
-        private readonly float _initialPower;
+        public byte Priority { get; }
 
-        public Effect(byte duration, float power)
+        private Entity _target;
+
+        public void Update()
         {
-            _initialDuration = duration;
-            _initialPower = power;
-            Duration = _initialDuration;
+            Tick(_target);
         }
 
         public void Apply(Entity target)
         {
-            if (IsOver)
-                throw new InvalidOperationException("Effect cannot be applied when its duration expires.");
-            Duration--;
-            ApplySelf(target, Power);
+            _target = target;
+            OnApplied(target);
         }
 
-        protected abstract void ApplySelf(Entity target, float power);
+        public void Dispose()
+        {
+            OnDispose(_target);
+            Expired?.Invoke(this);
+        }
+
+        protected abstract void OnApplied(Entity target);
+
+        protected abstract void Tick(Entity target);
+
+        protected abstract void OnDispose(Entity target);
     }
 }

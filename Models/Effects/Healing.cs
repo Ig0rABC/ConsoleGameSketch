@@ -2,16 +2,19 @@
 
 namespace Models.Effects
 {
-    public class Healing : Effect
+    public class Healing : TempEffect
     {
-        public Healing(byte count, float power) : base(count, power)
-        {
+        public readonly float Power;
 
+        public Healing(byte duration, float power, byte delay = 0) : base(duration, delay)
+        {
+            Power = power;
         }
 
-        protected override void ApplySelf(Entity target, float power)
+        protected override void OnTick(Entity target)
         {
-            target.Heal(power);
+            if (!target.Health.IsEmpty())
+                target.Heal(Power);
         }
     }
 }

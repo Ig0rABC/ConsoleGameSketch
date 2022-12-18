@@ -17,7 +17,7 @@ namespace Models.Items.Usable
         public override void Use(Entity user)
         {
             var effect = new Healing(Duration, Recovery);
-            user.Effector.Add(effect);
+            user.Apply(effect);
         }
     }
 }

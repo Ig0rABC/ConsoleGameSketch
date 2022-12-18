@@ -68,15 +68,15 @@ namespace ConsoleGameSketch
             View.OnDamaged(victim, damage);
         }
 
-        public void OnRecovered(Entity entity, float recovery)
+        public void OnHealed(Entity entity, float recovery)
         {
-            View.OnRecovered(entity, recovery);
+            View.OnHealed(entity, recovery);
         }
 
         public void OnDied(Entity dead, float damage)
         {
             dead.Damaged -= OnDamaged;
-            dead.Recovered -= OnRecovered;
+            dead.Healed -= OnHealed;
             dead.Died -= OnDied;
             View.OnDied(dead, damage);
         }

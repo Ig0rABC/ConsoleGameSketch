@@ -82,7 +82,7 @@ namespace Menus
             Console.WriteLine($"{victim.Name} recieved {damage * 100} damage");
         }
 
-        public static void OnRecovered(Entity entity, float recovery)
+        public static void OnHealed(Entity entity, float recovery)
         {
             Console.WriteLine($"{entity.Name} restored {recovery * 100} HP");
         }

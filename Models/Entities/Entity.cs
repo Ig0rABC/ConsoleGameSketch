@@ -5,7 +5,7 @@ using Models.Effects;
 
 namespace Models.Entities
 {
-    public abstract class Entity
+    public abstract class Entity : IUpdatable
     {
         public string Name { get; }
         public readonly StateBar Health;
@@ -20,8 +20,8 @@ namespace Models.Entities
         public delegate void DamagedHandler(Entity self, float damage);
         public event DamagedHandler Damaged;
 
-        public delegate void RecoveredHandler(Entity self, float damage);
-        public event DamagedHandler Recovered;
+        public delegate void HealedHandler(Entity self, float recovery);
+        public event HealedHandler Healed;
 
         public delegate void DiedHandler(Entity self, float damage);
         public event DiedHandler Died;
@@ -32,7 +32,7 @@ namespace Models.Entities
             Abilities = abilites;
             Resistances = resistances;
             Inventory = inventory;
-            Effector = new(this);
+            Effector = new(new());
             Mana = new();
             Health = new();
             Subscribe();
@@ -40,15 +40,20 @@ namespace Models.Entities
 
         public void Update()
         {
-            Effector.ApplyEffects(this);
+            Effector.Update(this);
         }
 
-        public void ApplyDamage(Damage damage)
+        public void Apply(Damage damage)
         {
             if (Health.IsEmpty())
                 throw new InvalidOperationException($"{this} is already dead");
             Inventory.Outfit?.ApplyDamage(damage);
             damage.Apply(Resistances, Health);
+        }
+
+        public void Apply(Effect effect)
+        {
+            Effector.Add(this, effect);
         }
 
         public void Heal(float recovery)
@@ -70,9 +75,9 @@ namespace Models.Entities
             Damaged?.Invoke(this, damage);
         }
 
-        private void OnRecovered(float recovery)
+        private void OnRestored(float recovery)
         {
-            Recovered?.Invoke(this, recovery);
+            Healed?.Invoke(this, recovery);
         }
 
         private void OnDied(float damage)
@@ -84,14 +89,14 @@ namespace Models.Entities
         private void Subscribe()
         {
             Health.Taken += OnDamaged;
-            Health.Restored += OnRecovered;
+            Health.Restored += OnRestored;
             Health.Emptied += OnDied;
         }
 
         private void Unsubscribe()
         {
             Health.Taken -= OnDamaged;
-            Health.Restored -= OnRecovered;
+            Health.Restored -= OnRestored;
             Health.Emptied -= OnDied;
         }
     }
