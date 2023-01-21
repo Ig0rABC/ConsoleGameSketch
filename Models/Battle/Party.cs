@@ -10,7 +10,7 @@ namespace Models.Battle
         
         public delegate void DefeatedHandler();
         public event DefeatedHandler Defeated;
-        public IEnumerable<Entity> AliveMembers => _members.Where(m => !m.Health.IsEmpty());
+        public IEnumerable<Entity> AliveMembers => _members.Where(m => m.Alive);
 
         public Entity Current => AliveMembers.ElementAt(_index);
         

@@ -19,15 +19,14 @@ namespace Models.Weapons
 
         public override void Use(Entity user)
         {
-            user.Mana.Take(RequiredMana);
-            user.Abilities.ApplyMagic();
+            user.Cast(RequiredMana);
             if (Level < 10)
                 _level += 0.33f;
         }
 
         public override bool CanUsed(Entity user)
         {
-            return user.Mana.Value >= RequiredMana;
+            return user.Mana >= RequiredMana;
         }
     }
 }

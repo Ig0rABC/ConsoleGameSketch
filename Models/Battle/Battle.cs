@@ -42,7 +42,7 @@ namespace Models.Battle
             var enemies = TargetParty.AliveMembers;
             Entity target = enemies.First();
             foreach (var member in enemies.Skip(1))
-                if (member.Health.Value < target.Health.Value)
+                if (member.Health < target.Health)
                     target = member;
             return target;
         }

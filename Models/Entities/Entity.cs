@@ -8,8 +8,11 @@ namespace Models.Entities
     public abstract class Entity : IUpdatable
     {
         public string Name { get; }
-        public readonly StateBar Health;
-        public readonly StateBar Mana;
+        public float Health => _health.Value;
+        public float Mana => _mana.Value;
+
+        public bool Alive => !_health.IsEmpty();
+        
         public readonly AbilityBoard Abilities;
         public readonly EntityResistanceBoard Resistances;
         public readonly Inventory Inventory;
@@ -26,15 +29,18 @@ namespace Models.Entities
         public delegate void DiedHandler(Entity self, float damage);
         public event DiedHandler Died;
 
+        private readonly StateBar _health;
+        private readonly StateBar _mana;
+
         public Entity(string name, AbilityBoard abilites, EntityResistanceBoard resistances, Inventory inventory)
         {
             Name = name;
             Abilities = abilites;
             Resistances = resistances;
             Inventory = inventory;
-            Effector = new(new());
-            Mana = new();
-            Health = new();
+            Effector = new();
+            _mana = new();
+            _health = new();
             Subscribe();
         }
 
@@ -45,10 +51,10 @@ namespace Models.Entities
 
         public void Apply(Damage damage)
         {
-            if (Health.IsEmpty())
+            if (!Alive)
                 throw new InvalidOperationException($"{this} is already dead");
             Inventory.Outfit?.ApplyDamage(damage);
-            damage.Apply(Resistances, Health);
+            damage.Apply(Resistances, _health);
         }
 
         public void Apply(Effect effect)
@@ -56,11 +62,17 @@ namespace Models.Entities
             Effector.Add(this, effect);
         }
 
+        public void Cast(float requiredMana)
+        {
+            _mana.Take(requiredMana);
+            Abilities.ApplyMagic();
+        }
+
         public void Heal(float recovery)
         {
-            if (Health.IsEmpty())
+            if (!Alive)
                 throw new InvalidOperationException($"{this} is dead and cannot be healed");
-            Health.Restore(recovery);
+            _health.Restore(recovery);
         }
 
         public void UseWeapon()
@@ -88,16 +100,16 @@ namespace Models.Entities
 
         private void Subscribe()
         {
-            Health.Taken += OnDamaged;
-            Health.Restored += OnRestored;
-            Health.Emptied += OnDied;
+            _health.Taken += OnDamaged;
+            _health.Restored += OnRestored;
+            _health.Emptied += OnDied;
         }
 
         private void Unsubscribe()
         {
-            Health.Taken -= OnDamaged;
-            Health.Restored -= OnRestored;
-            Health.Emptied -= OnDied;
+            _health.Taken -= OnDamaged;
+            _health.Restored -= OnRestored;
+            _health.Emptied -= OnDied;
         }
     }
 }

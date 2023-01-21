@@ -15,9 +15,10 @@ namespace Models.Effects
 
         private readonly List<Effect> _effects;
 
-        public Effector(List<Effect> effects)
+        public Effector(IEnumerable<Effect> effects = null)
         {
-            _effects = effects;
+            effects ??= new List<Effect>();
+            _effects = effects.ToList();
         }
 
         public void Update(Entity target)

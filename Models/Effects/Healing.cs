@@ -13,7 +13,7 @@ namespace Models.Effects
 
         protected override void OnTick(Entity target)
         {
-            if (!target.Health.IsEmpty())
+            if (target.Alive)
                 target.Heal(Power);
         }
     }

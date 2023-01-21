@@ -16,7 +16,7 @@ namespace Models.Effects
         protected override void OnTick(Entity target)
         {
             var damage = (Damage)Activator.CreateInstance(typeof(T), Power);
-            if (!target.Health.IsEmpty())
+            if (target.Alive)
                 target.Apply(damage);
         }
     }
